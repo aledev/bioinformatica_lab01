@@ -4,10 +4,68 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html">
     <h:head>
         <title>Bioinformática - Ranking de Genes</title>
-        
+        <h:outputStylesheet name="css/bootstrap.min.css"/>
+        <h:outputStylesheet name="css/bootstrap-theme.min.css"/>
+        <h:outputStylesheet name="css/template.css"/>
     </h:head>
     <h:body>
-        Ranking de Genes
+        <h:outputScript name="js/jquery-3.1.0.min.js"></h:outputScript>
+        <h:outputScript name="js/bootstrap.min.js"></h:outputScript>
+            
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+         <div class="container">
+           <div class="navbar-header">
+               <a class="navbar-brand" href="#">Bioinform&aacute;tica - Ranking de Genes</a>
+           </div>
+           <div id="navbar" class="collapse navbar-collapse">
+           </div><!--/.nav-collapse -->
+         </div>
+       </nav>
+
+        <div class="container">
+
+          <div class="starter-template">
+              <h:form id="frmProcesar" enctype="multipart/form-data">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><a href="#" onclick="ShowHideFilter(this)">
+                            <span class="glyphicon glyphicon-menu-up"></span></a> &nbsp; Ingreso de Datos
+                        </h3>
+                    </div>
+                    <div class="panel-body form-horizontal">
+                        <div class="form-group">
+                            <div class="col-xs-6 col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-sm-4" for="ipfArchivo">Archivo</label>
+                                    <div class="col-sm-16">     
+                                        <h:inputFile id="ipfArchivo" value="#{subirarchivobean.archivo}"></h:inputFile>
+                                        <h:commandButton id="btnSubirArchivo" value="Subir Archivo" action="#{subirarchivobean.subirArchivo}"></h:commandButton>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-xs-6 col-md-4">
+                                &nbsp;
+                            </div>
+                            <div class="col-xs-6 col-md-4">
+                               &nbsp;
+                            </div> 
+                        </div>       
+                        <div class="form-group">
+                            <div class="col-xs-6 col-md-4">
+                                <input type="button" value="Realizar Ranking" class="btn btn-primary" onclick="BuscarDatos()"/>
+                                <input type="button" value="Limpiar Datos" class="btn btn-primary" onclick="Limpiar()"/>
+                            </div>
+                            <div class="col-xs-6 col-md-4"></div>
+                            <div class="col-xs-6 col-md-4"></div>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+            </div>
+        </div><!-- /.container -->
+    
     </h:body>
 </html>
 
