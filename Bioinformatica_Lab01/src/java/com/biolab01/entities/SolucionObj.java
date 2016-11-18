@@ -75,6 +75,7 @@ public class SolucionObj implements Serializable{
             }
             else{
                 clusAux = new ClusterObj();
+                clusAux.setNroSolucion(this.nroSolucion);
                 clusAux.setNroCluster(clusterNum);
                 clusAux.addGenLista(genName);
                 this.clusterData.add(clusAux);

@@ -5,12 +5,14 @@
  */
 package com.biolab01.beans;
 
+import com.biolab01.entities.ClusterObj;
 import com.biolab01.entities.SolucionObj;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
 import javax.servlet.http.Part;
 
 /**
@@ -24,6 +26,9 @@ public class SubirArchivoBean {
     private Part archivo;
     private String nombreArchivo;
     private ArrayList<SolucionObj> solucionData;
+    private int nroClusterDetalle;
+    private ClusterObj clusterDetalle;
+    private String errorMessage;
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="metodos accesores">
@@ -35,8 +40,20 @@ public class SubirArchivoBean {
         return this.nombreArchivo;
     }
     
+    public int getNroClusterDetalle(){
+        return this.nroClusterDetalle;
+    }
+    
+    public ClusterObj getClusterDetalle(){
+        return this.clusterDetalle;
+    }
+    
     public ArrayList<SolucionObj> getSolucionData(){
         return this.solucionData;
+    }
+    
+    public String getErrorMessage(){
+        return this.errorMessage;
     }
     //</editor-fold>
     
@@ -44,11 +61,19 @@ public class SubirArchivoBean {
     public void setArchivo(Part archivo){
         this.archivo = archivo;
     }
+    
+    public void setNroClusterDetalle(int nroClusterDetalle){
+        this.nroClusterDetalle = nroClusterDetalle;
+    }
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="metodos publicos">
+    
+    //<editor-fold defaultstate="collapsed" desc="realizarRanking">
     public void realizarRanking(){
         try{
+            // Limpiamos el mensaje de error
+            errorMessage = "";
             // Seteamos el nombre del Archivo
             this.nombreArchivo = archivo.getSubmittedFileName();
             // Leemos el archivo
@@ -120,11 +145,41 @@ public class SubirArchivoBean {
             // Mostramos la cantidad de genes en la consola
             System.out.println("Cantidad de Genes: " + cantidadGenes);
         }
-        catch(IOException ex){
+        catch(Exception ex){
             // Mostramos la excepción en la consola
             System.out.println("Error al intentar leer el archivo. Detalle: " + ex.getMessage());
+            errorMessage = "Error al intentar leer el archivo. Detalle: " + ex.getMessage();
         }
     }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="verDetalleGenes">
+    public void verDetalleGenes(int posicionSolucion, int nroCluster){
+        try{
+            // Limpiamos el mensaje de error
+            errorMessage = "";
+            SolucionObj posSol = this.findSolutionByPosition(this.solucionData, posicionSolucion);
+            if(posSol != null){
+                ArrayList<ClusterObj> clusterData = posSol.getClusterData();
+                for(ClusterObj clus : clusterData){
+                    if(clus.getNroCluster() == nroCluster){
+                        this.clusterDetalle = clus;
+                        break;
+                    }
+                }
+            }
+            
+            // Realizamos el redirect
+            FacesContext.getCurrentInstance().getExternalContext().redirect("ranking.xhtml");
+        }
+        catch(Exception ex){
+            // Mostramos la excepción en la consola
+            System.out.println("Error al intentar leer el archivo. Detalle: " + ex.getMessage());
+            errorMessage = "Error al intentar leer el archivo. Detalle: " + ex.getMessage();
+        }
+    }
+    //</editor-fold>
+    
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="metodos privados">

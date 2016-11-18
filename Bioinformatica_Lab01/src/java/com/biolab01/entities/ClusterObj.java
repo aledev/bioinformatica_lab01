@@ -15,6 +15,7 @@ import java.util.List;
  */
 public class ClusterObj implements Serializable{
     //<editor-fold defaultstate="collapsed" desc="propiedades privadas">
+    private int nroSolucion;
     private int nroCluster;
     private ArrayList<String> listaGenes;
     //</editor-fold>
@@ -24,13 +25,18 @@ public class ClusterObj implements Serializable{
         
     }
     
-    public ClusterObj(int nroCluster, ArrayList<String> listaGenes){
+    public ClusterObj(int nroSolucion, int nroCluster, ArrayList<String> listaGenes){
+        this.nroSolucion = nroSolucion;
         this.nroCluster = nroCluster;
         this.listaGenes = listaGenes;
     }
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="metodos accesores">
+    public int getNroSolucion(){
+        return this.nroSolucion;
+    }
+    
     public int getNroCluster(){
         return this.nroCluster;
     }
@@ -41,6 +47,10 @@ public class ClusterObj implements Serializable{
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="metodos mutadores">
+    public void setNroSolucion(int nroSolucion){
+        this.nroSolucion = nroSolucion;
+    }
+    
     public void setNroCluster(int nroCluster){
         this.nroCluster = nroCluster;
     }

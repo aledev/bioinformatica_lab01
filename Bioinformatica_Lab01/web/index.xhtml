@@ -12,7 +12,33 @@
     <h:body>
         <h:outputScript name="js/jquery-3.1.0.min.js"></h:outputScript>
         <h:outputScript name="js/bootstrap.min.js"></h:outputScript>
+        <h:outputScript name="js/utils.js"></h:outputScript>
             
+        <script type="text/javascript">
+            $(document).ready(function(){
+                var errorMessage = '#{subirarchivobean.errorMessage}';
+                var fileName = '#{subirarchivobean.nombreArchivo}';
+                
+                // Comprobar mensaje de error
+                if(errorMessage != ''){
+                    $('#divErrorMessage').html(errorMessage);
+                    $('#divErrorMessage').show();
+                }
+                else{
+                    $('#divErrorMessage').html('');
+                    $('#divErrorMessage').hide();
+                    
+                    // Comprobar nombre de archivo
+                    if(fileName != ''){
+                        $('#lstDataTitle').text('Ranking de Genes (' + fileName + ')');
+                    }
+                    else{
+                        $('#lstDataTitle').text('Ranking de Genes');
+                    }
+                }
+            });
+        </script>
+        
         <nav class="navbar navbar-inverse navbar-fixed-top">
          <div class="container">
            <div class="navbar-header">
@@ -26,6 +52,9 @@
         <div class="container">
 
           <div class="starter-template">
+              
+              <div id="divErrorMessage" class="alert alert-danger" style="display:none"></div>
+              
               <h:form id="frmProcesar" enctype="multipart/form-data">
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -39,7 +68,7 @@
                                 <div class="form-group">
                                     <label class="control-label col-sm-4" for="ipfArchivo">Archivo</label>
                                     <div class="col-sm-8">     
-                                        <h:inputFile id="ipfArchivo" value="#{subirarchivobean.archivo}"></h:inputFile>&nbsp;
+                                        <h:inputFile class="form-control" id="ipfArchivo" value="#{subirarchivobean.archivo}"></h:inputFile>&nbsp;
                                     </div>
                                 </div>
                             </div>
@@ -49,7 +78,6 @@
                         </div>
                         <div class="form-group">
                             <div class="col-xs-6 col-md-4">
-                                &nbsp;
                             </div>
                             <div class="col-xs-6 col-md-4">
                                &nbsp;
@@ -70,7 +98,7 @@
               
             <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Ranking de Soluciones (#{subirarchivobean.nombreArchivo})</h3>
+                        <h3 id="lstDataTitle" class="panel-title">Ranking de Soluciones</h3>
                     </div>
                     <div class="panel-body">
                         <div class="row">
@@ -81,6 +109,7 @@
                                         <th>Soluci&oacute;n</th>
                                         <th>Cluster</th>
                                         <th>Cantidad Genes</th>
+                                        <th>Genes</th>
                                         <th>&nbsp;</th>
                                     </tr>                
                                 </thead>
@@ -97,8 +126,16 @@
                                                <td>
                                                    #{cluster.listaGenes.size()}
                                                </td>
+                                               <td style="max-width:300px;text-overflow:ellipsis;white-space:nowrap;overflow:hidden">
+                                                    <ui:repeat value="#{cluster.listaGenes}" var="gen">
+                                                        #{gen},&nbsp;
+                                                    </ui:repeat>
+                                               </td>
                                                <td>
-                                                   &nbsp;
+                                                    <h:form>
+                                                        <h:commandLink action="#{subirarchivobean.verDetalleGenes(item.position, cluster.nroCluster)}" value="Ver Genes">
+                                                        </h:commandLink>
+                                                    </h:form>
                                                </td>
                                            </tr>
                                         </ui:repeat>
