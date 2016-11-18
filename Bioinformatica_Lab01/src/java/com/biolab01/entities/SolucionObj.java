@@ -5,6 +5,7 @@
  */
 package com.biolab01.entities;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  *
  * @author aialiagam
  */
-public class SolucionObj {
+public class SolucionObj implements Serializable{
     //<editor-fold defaultstate="collapsed" desc="propiedades privadas">
     private int position;
     private int nroSolucion;
@@ -76,9 +77,8 @@ public class SolucionObj {
                 clusAux = new ClusterObj();
                 clusAux.setNroCluster(clusterNum);
                 clusAux.addGenLista(genName);
+                this.clusterData.add(clusAux);
             }
-            
-            this.clusterData.add(clusAux);
         }
     }
     //</editor-fold>
@@ -91,7 +91,7 @@ public class SolucionObj {
         ClusterObj objResult = null;
         
         for(ClusterObj clus : clusterData){
-            if(clus.getNroCluster() == nroSolucion){
+            if(clus.getNroCluster() == clusterNum){
                 objResult = clus;
                 break;
             }

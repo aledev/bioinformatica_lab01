@@ -5,6 +5,7 @@
  */
 package com.biolab01.entities;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  *
  * @author aialiagam
  */
-public class ClusterObj {
+public class ClusterObj implements Serializable{
     //<editor-fold defaultstate="collapsed" desc="propiedades privadas">
     private int nroCluster;
     private ArrayList<String> listaGenes;

@@ -5,14 +5,12 @@
  */
 package com.biolab01.beans;
 
-import com.biolab01.entities.ClusterObj;
 import com.biolab01.entities.SolucionObj;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.servlet.http.Part;
 
 /**
@@ -20,20 +18,39 @@ import javax.servlet.http.Part;
  * @author aialiagam
  */
 @ManagedBean(name = "subirarchivobean", eager = true)
+@SessionScoped
 public class SubirArchivoBean {
+    //<editor-fold defaultstate="collapsed" desc="propiedades privadas">
     private Part archivo;
-    private String contenidoArchivo;
+    private String nombreArchivo;
+    private ArrayList<SolucionObj> solucionData;
+    //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="metodos accesores">
     public Part getArchivo(){
         return this.archivo;
     }
+
+    public String getNombreArchivo(){
+        return this.nombreArchivo;
+    }
     
+    public ArrayList<SolucionObj> getSolucionData(){
+        return this.solucionData;
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="metodos mutadores">
     public void setArchivo(Part archivo){
         this.archivo = archivo;
     }
+    //</editor-fold>
     
-    public void subirArchivo(){
+    //<editor-fold defaultstate="collapsed" desc="metodos publicos">
+    public void realizarRanking(){
         try{
+            // Seteamos el nombre del Archivo
+            this.nombreArchivo = archivo.getSubmittedFileName();
             // Leemos el archivo
             Scanner fileRead = new Scanner(archivo.getInputStream());
             // Creamos una lista con todas las soluciones existentes en el archivo
@@ -96,6 +113,10 @@ public class SubirArchivoBean {
                 currentLine++;
             }
             
+            // Seteamos los datos obtenidos del archivo al objeto solucionData
+            // que es el objeto que tomará la vista para mostrar el ranking
+            this.solucionData = solucionList;
+            
             // Mostramos la cantidad de genes en la consola
             System.out.println("Cantidad de Genes: " + cantidadGenes);
         }
@@ -104,6 +125,7 @@ public class SubirArchivoBean {
             System.out.println("Error al intentar leer el archivo. Detalle: " + ex.getMessage());
         }
     }
+    //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="metodos privados">
    
