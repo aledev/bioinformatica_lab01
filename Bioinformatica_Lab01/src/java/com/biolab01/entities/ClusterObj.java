@@ -18,6 +18,7 @@ public class ClusterObj implements Serializable{
     private int nroSolucion;
     private int nroCluster;
     private ArrayList<String> listaGenes;
+    private ArrayList<GenDictionary> diccionarioGenes;
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="constructores">
@@ -25,10 +26,11 @@ public class ClusterObj implements Serializable{
         
     }
     
-    public ClusterObj(int nroSolucion, int nroCluster, ArrayList<String> listaGenes){
+    public ClusterObj(int nroSolucion, int nroCluster, ArrayList<String> listaGenes, ArrayList<GenDictionary> diccionarioGenes){
         this.nroSolucion = nroSolucion;
         this.nroCluster = nroCluster;
         this.listaGenes = listaGenes;
+        this.diccionarioGenes = diccionarioGenes;
     }
     //</editor-fold>
     
@@ -39,6 +41,13 @@ public class ClusterObj implements Serializable{
     
     public int getNroCluster(){
         return this.nroCluster;
+    }
+    
+    /**
+     * @return the diccionarioGenes
+     */
+    public ArrayList<GenDictionary> getDiccionarioGenes() {
+        return diccionarioGenes;
     }
     
     public ArrayList<String> getListaGenes(){
@@ -67,6 +76,25 @@ public class ClusterObj implements Serializable{
         else{
             if(!this.listaGenes.contains(gen)){
                 this.listaGenes.add(gen);
+            }
+        }
+    }
+    
+     /**
+     * @param diccionarioGenes the diccionarioGenes to set
+     */
+    public void setDiccionarioGenes(ArrayList<GenDictionary> diccionarioGenes) {
+        this.diccionarioGenes = diccionarioGenes;
+    }
+    
+     public void addDiccionarioGenLista(GenDictionary gen){
+        if(this.diccionarioGenes == null){
+            this.diccionarioGenes = new ArrayList();
+            this.diccionarioGenes.add(gen);
+        }
+        else{
+            if(!this.diccionarioGenes.contains(gen)){
+                this.diccionarioGenes.add(gen);
             }
         }
     }

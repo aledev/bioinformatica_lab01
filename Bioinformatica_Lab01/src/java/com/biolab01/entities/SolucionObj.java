@@ -58,12 +58,14 @@ public class SolucionObj implements Serializable{
         this.clusterData = clusterData;
     }
     
-    public void addClusterData(int clusterNum, String genName){
+    public void addClusterData(int clusterNum, String genName, GenDictionary genData){
         if(this.clusterData == null){
             this.clusterData = new ArrayList();
             ClusterObj clusterObj = new ClusterObj();
+            clusterObj.setNroSolucion(this.nroSolucion);
             clusterObj.setNroCluster(clusterNum);
             clusterObj.addGenLista(genName);
+            clusterObj.addDiccionarioGenLista(genData);
             
             this.clusterData.add(clusterObj);
         }
@@ -78,6 +80,7 @@ public class SolucionObj implements Serializable{
                 clusAux.setNroSolucion(this.nroSolucion);
                 clusAux.setNroCluster(clusterNum);
                 clusAux.addGenLista(genName);
+                clusAux.addDiccionarioGenLista(genData);
                 this.clusterData.add(clusAux);
             }
         }

@@ -6,10 +6,14 @@
 package com.biolab01.beans;
 
 import com.biolab01.entities.ClusterObj;
+import com.biolab01.entities.GenDictionary;
 import com.biolab01.entities.SolucionObj;
+import com.biolab01.utils.core.RankingProcedure;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -26,7 +30,10 @@ public class SubirArchivoBean {
     private Part archivo;
     private String nombreArchivo;
     private ArrayList<SolucionObj> solucionData;
+    private ArrayList<ClusterObj> clusterData;
+    private ArrayList<GenDictionary> genDictionaryArray;
     private int nroClusterDetalle;
+    private int cantidadGenesCalculo;
     private ClusterObj clusterDetalle;
     private String errorMessage;
     //</editor-fold>
@@ -48,6 +55,10 @@ public class SubirArchivoBean {
         return this.clusterDetalle;
     }
     
+    public int getCantidadGenesCalculo(){
+        return this.cantidadGenesCalculo;
+    }
+    
     public ArrayList<SolucionObj> getSolucionData(){
         return this.solucionData;
     }
@@ -65,12 +76,16 @@ public class SubirArchivoBean {
     public void setNroClusterDetalle(int nroClusterDetalle){
         this.nroClusterDetalle = nroClusterDetalle;
     }
+    
+    public void setCantidadGenesCalculo(int cantidadGenesCalculo){
+        this.cantidadGenesCalculo = cantidadGenesCalculo;
+    }
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="metodos publicos">
     
-    //<editor-fold defaultstate="collapsed" desc="realizarRanking">
-    public void realizarRanking(){
+    //<editor-fold defaultstate="collapsed" desc="subirArchivo">
+    public void subirArchivo(){
         try{
             // Limpiamos el mensaje de error
             errorMessage = "";
@@ -114,6 +129,10 @@ public class SubirArchivoBean {
                     String[] genClusterArray = currentStringLine.split(",");
                     // Obtenemos el nombre del gen
                     String genName = genClusterArray[0].trim();
+                    // Creamos un objeto para el diccionario de genes
+                    GenDictionary currentGenData = new GenDictionary(cantidadGenes + 1, genName); 
+                    // Agregamos el objeto diccionario gen a la lista
+                    this.addDiccionarioGenToArray(currentGenData);
                     
                     // Recorremos la lista de clusters donde esta el gen
                     for(int x = 1; x < genClusterArray.length; x++){
@@ -123,11 +142,10 @@ public class SubirArchivoBean {
                         // Obtenemos la solución actual de acuerdo a la posición del archivo
                         // en este caso, correspondería al indice actual - 1
                         SolucionObj sol = findSolutionByPosition(solucionList, (x - 1));
-                        
                         // Si la solución es diferente de null, es por que existe en la lista
                         if(sol != null){
                             // Le agregamos a la solución el cluster y el gen actual
-                            sol.addClusterData(clusterNum, genName);
+                            sol.addClusterData(clusterNum, genName, currentGenData);
                         }
                     }
                     
@@ -149,6 +167,26 @@ public class SubirArchivoBean {
             // Mostramos la excepción en la consola
             System.out.println("Error al intentar leer el archivo. Detalle: " + ex.getMessage());
             errorMessage = "Error al intentar leer el archivo. Detalle: " + ex.getMessage();
+        }
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="calcularRanking">
+    public void calcularRanking(){
+        try{
+            RankingProcedure ranking = new RankingProcedure();
+            // Obtenemos los clusters que cumplan con el mínimo de genes para buscar coincidencia
+            ArrayList<ClusterObj> totalClusters = ranking.getClusterArrayList(solucionData, this.cantidadGenesCalculo);
+            this.solucionData = null;
+            // Obtenemos la cantidad de combinaciones que se pueden hacer con los genes
+            //ArrayList<int[]>> kSubSets = ranking.getGenDictionarySubsets(genDictionaryArray, this.cantidadGenesCalculo);
+            System.out.println("Total Clusters: " + totalClusters.size());
+            System.out.println("Cantidad Genes: " + this.genDictionaryArray.size());
+            //System.out.println("Total Subconjuntos: " + kSubSets.size());
+        }
+        catch(Exception ex){
+            // Mostramos la excepción en la consola
+            System.out.println("Error al intentar realizar el calculo. Detalle: " + ex.getMessage());
         }
     }
     //</editor-fold>
@@ -212,5 +250,16 @@ public class SubirArchivoBean {
         return objResult;
     }
     
+    private void addDiccionarioGenToArray(GenDictionary gen){
+        if(this.genDictionaryArray == null){
+            this.genDictionaryArray = new ArrayList();
+            this.genDictionaryArray.add(gen);
+        }
+        else{
+            if(!this.genDictionaryArray.contains(gen)){
+                this.genDictionaryArray.add(gen);
+            }
+        }
+    }
     //</editor-fold>
 }
