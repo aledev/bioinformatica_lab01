@@ -163,6 +163,7 @@ public class RankingProcedure {
             }
             
             if(isOK){
+                Arrays.sort(kSubSets.get(x));
                 objResult.add(kSubSets.get(x));
             }
         }
@@ -171,15 +172,63 @@ public class RankingProcedure {
     }
     
     public void getCommonSubSets(ArrayList<GenRankingObj> arraySolution, ArrayList<int[]> ksubsetA, ArrayList<int[]> ksubsetB){
+        // Parcializamos la cantidad de datos para la recursión
+        int init = 0;
+        int grow = 100;
+        boolean isCompleted = false;
+        
         for (int[] a : ksubsetA) {
-            Arrays.sort(a);
-            for (int[] b : ksubsetB) {
-                Arrays.sort(b);
-                if (this.equalsHelper(a, b, 0)) {
-                    this.addGenRankingToArray(arraySolution, b);
+            init = 0;
+            isCompleted = false;
+            List<int[]> ksubsetBAux = null;
+            
+            while(!isCompleted){
+                ksubsetBAux = new ArrayList<>();
+                
+                if(init >= ksubsetB.size()){
+                    int diff = init - ksubsetB.size() + 1;
+                    ksubsetBAux = ksubsetB.subList(init - diff, ksubsetB.size() - 1);
+                    isCompleted = true;
                 }
+                else{
+                    if(((init + grow) - 1) > ksubsetB.size()){
+                        ksubsetBAux = ksubsetB.subList(init, ksubsetB.size() - 1);
+                        isCompleted = true;
+                    }
+                    else{
+                        ksubsetBAux = ksubsetB.subList(init, (init + grow) - 1);
+                        init = init + grow;
+                    }
+                }
+                
+                getCommonSubSetRecursiveComparison(arraySolution, a, ksubsetBAux, 0);
             }
         }
+    }
+    
+    public void getCommonSubSetsRecursive(ArrayList<GenRankingObj> arraySolution, ArrayList<int[]> ksubsetA, ArrayList<int[]> ksubsetB, int[] ksubSetIdxA, int[] ksubSetIdxB, int idxA, int idxB){
+        if(idxA == ksubsetA.size())
+            return;
+        if(idxB == ksubsetB.size()){
+            idxA++;
+            idxB = 0;
+        }
+        else{
+            if(ksubSetIdxA == null && ksubSetIdxB == null){
+                ksubSetIdxA = ksubsetA.get(idxA);
+                ksubSetIdxB = ksubsetB.get(idxB);
+                
+                getCommonSubSetsRecursive(arraySolution, ksubsetA, ksubsetB, ksubSetIdxA, ksubSetIdxB, idxA, idxB);
+            }
+            else{
+                if(this.equalsHelper(ksubSetIdxA, ksubSetIdxB, 0)){
+                    this.addGenRankingToArray(arraySolution, ksubSetIdxB);
+                }
+                idxB++;
+            }
+        }    
+        
+        getCommonSubSetsRecursive(arraySolution, ksubsetA, ksubsetB, ksubSetIdxA, ksubSetIdxB, idxA, idxB);
     }
     //</editor-fold>
     
@@ -241,6 +290,33 @@ public class RankingProcedure {
         if(first[indx] != second[indx])
             return false;
         return equalsHelper(first, second, indx + 1);
+    }
+    
+    private void getCommonSubSetRecursiveComparison(ArrayList<GenRankingObj> arraySolution, int[] subsetA, ArrayList<int[]> ksubsetB, int idx){
+        if(idx == ksubsetB.size())
+            return;
+        else{
+            int[] ksubsetIdxB = ksubsetB.get(idx);
+            if(this.equalsHelper(subsetA, ksubsetIdxB, 0)){
+                this.addGenRankingToArray(arraySolution, ksubsetIdxB);
+            }
+            idx++;
+            getCommonSubSetRecursiveComparison(arraySolution, subsetA, ksubsetB, idx);
+        }
+    }
+    
+    private void getCommonSubSetRecursiveComparison(ArrayList<GenRankingObj> arraySolution, int[] subsetA, List<int[]> ksubsetB, int idx){
+        if(idx == ksubsetB.size())
+            return;
+        else{
+            int[] ksubsetIdxB = ksubsetB.get(idx);
+            //if(this.equalsHelper(subsetA, ksubsetIdxB, 0)){
+            if(Arrays.equals(subsetA, ksubsetIdxB)){
+                this.addGenRankingToArray(arraySolution, ksubsetIdxB);
+            }
+            idx++;
+            getCommonSubSetRecursiveComparison(arraySolution, subsetA, ksubsetB, idx);
+        }
     }
     //</editor-fold>
 }

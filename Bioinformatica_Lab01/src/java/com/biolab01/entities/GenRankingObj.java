@@ -5,6 +5,7 @@
  */
 package com.biolab01.entities;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 /**
@@ -16,6 +17,7 @@ public class GenRankingObj {
     private int[] genArray;
     private Set<Integer> genSet;
     private int cantidad;
+    private ArrayList<String> genNamesArray;
     
     public GenRankingObj(){
         
@@ -75,5 +77,19 @@ public class GenRankingObj {
      */
     public void setGenSet(Set<Integer> genSet) {
         this.genSet = genSet;
+    }
+
+    /**
+     * @return the genNamesArray
+     */
+    public ArrayList<String> getGenNamesArray() {
+        return genNamesArray;
+    }
+
+    /**
+     * @param genNamesArray the genNamesArray to set
+     */
+    public void setGenNamesArray(ArrayList<String> genNamesArray) {
+        this.genNamesArray = genNamesArray;
     }
 }

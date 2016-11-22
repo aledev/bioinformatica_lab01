@@ -73,37 +73,25 @@
                                     </div>
                                 </div>
                             </div>
+                            <label class="control-label col-sm-4" for="ddlCantidadGenes">Cantidad Genes</label>
                             <div class="col-xs-6 col-md-4">
-                               &nbsp;
-                            </div> 
-                        </div>
-                        <div class="form-group">
-                            <div class="col-xs-6 col-md-4">
-                                <h:selectOneMenu id="ddlCantidadGenes" value="#{subirarchivobean.cantidadGenesCalculo}">
+                                <h:selectOneMenu class="form-control" id="ddlCantidadGenes" value="#{subirarchivobean.cantidadGenesCalculo}">
                                     <f:selectItem itemValue="2" itemLabel="2 Genes" />	
                                     <f:selectItem itemValue="3" itemLabel="3 Genes" />	
                                     <f:selectItem itemValue="4" itemLabel="4 Genes" />	
                                     <f:selectItem itemValue="5" itemLabel="5 Genes" />	
-                                    <f:selectItem itemValue="10" itemLabel="10 Genes" />	
-                                    <f:selectItem itemValue="20" itemLabel="20 Genes" />	
-                                    <f:selectItem itemValue="30" itemLabel="30 Genes" />	
-                                    <f:selectItem itemValue="40" itemLabel="40 Genes" />	
-                                    <f:selectItem itemValue="50" itemLabel="50 Genes" />	
-                                    <f:selectItem itemValue="60" itemLabel="60 Genes" />	
-                                    <f:selectItem itemValue="70" itemLabel="70 Genes" />	
-                                    <f:selectItem itemValue="80" itemLabel="80 Genes" />	
-                                    <f:selectItem itemValue="90" itemLabel="90 Genes" />	
-                                    <f:selectItem itemValue="100" itemLabel="100 Genes" />	
+                                    <f:selectItem itemValue="6" itemLabel="6 Genes" />	
+                                    <f:selectItem itemValue="7" itemLabel="7 Genes" />	
+                                    <f:selectItem itemValue="8" itemLabel="8 Genes" />	
+                                    <f:selectItem itemValue="9" itemLabel="9 Genes" />	
+                                    <f:selectItem itemValue="10" itemLabel="10 Genes" />		
                                 </h:selectOneMenu>
                             </div>
-                            <div class="col-xs-6 col-md-4">
-                               &nbsp;
-                            </div> 
-                        </div>       
+                        </div>
                         <div class="form-group">
                             <div class="col-xs-6 col-md-4">
                                 <h:commandButton id="btnSubirArchivo" action="#{subirarchivobean.subirArchivo}" 
-                                                 value="Subir Archivo" class="btn btn-primary"></h:commandButton>
+                                                 value="Subir Archivo" class="btn btn-primary"></h:commandButton> &nbsp;
                                 <h:commandButton id="btnRealizarRanking" action="#{subirarchivobean.calcularRanking}" 
                                                  value="Realizar Ranking" class="btn btn-primary"></h:commandButton>
                             </div>
@@ -124,6 +112,7 @@
                             <table id="dgvListaDatos" class="table table-hover table-striped table-custom">
                                 <thead>
                                     <tr>
+                                        <th>N°</th>
                                         <th>Soluci&oacute;n</th>
                                         <th>Cluster</th>
                                         <th>Cantidad Genes</th>
@@ -135,6 +124,9 @@
                                     <ui:repeat value="#{subirarchivobean.solucionData}" var="item">
                                         <ui:repeat value="#{item.clusterData}" var="cluster">
                                             <tr>
+                                               <td>
+                                                   #{item.position}
+                                               </td>
                                                <td>
                                                    #{item.nroSolucion}
                                                </td>

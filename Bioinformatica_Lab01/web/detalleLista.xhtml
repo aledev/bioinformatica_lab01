@@ -27,31 +27,6 @@
             <div class="starter-template">
                 <div id="divErrorMessage" class="alert alert-danger" style="display:none"></div>
                 
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title"><a href="#" onclick="ShowHideFilter(this)">
-                            <span class="glyphicon glyphicon-menu-up"></span></a> &nbsp; Ingreso de Datos
-                        </h3>
-                    </div>
-                    <div class="panel-body form-horizontal">
-                        <div class="form-group">
-                            <div class="col-xs-6 col-md-4">
-                                <label name="lblCantidadEncontrados">Total Encontrados: #{subirarchivobean.cantidadRankingEncontrados}</label>
-                            </div>
-                            <div class="col-xs-6 col-md-4">
-                                &nbsp;
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-xs-6 col-md-4">
-                                <input type="button" class="btn btn-primary" value="Volver" onclick="javascript:window.history.back();"></input>
-                            </div>
-                            <div class="col-xs-6 col-md-4"></div>
-                            <div class="col-xs-6 col-md-4"></div>
-                        </div>
-                    </div>
-                </div>
-                
                 <div class="panel-heading">
                     <h3 id="lstDataTitle" class="panel-title">Lista de Genes</h3>
                 </div>
@@ -61,24 +36,22 @@
                             <table id="dgvListaDatos" class="table table-hover table-striped table-custom">
                                 <thead>
                                     <tr>
-                                        <th>Genes</th>
-                                        <th>Repeticiones</th>
-                                        <th>&nbsp;</th>
+                                        <th>Soluci&oacute;n</th>
+                                        <th>Cluster</th>
+                                        <th>Gen</th>
                                     </tr>                
                                 </thead>
                                 <tbody>
-                                    <ui:repeat value="#{subirarchivobean.rankingData}" var="item">
+                                    <ui:repeat value="#{subirarchivobean.clusterDetalle.listaGenes}" var="item">
                                         <tr>
                                             <td>
-                                                <ui:repeat value="#{item.genNamesArray}" var="genName">
-                                                    #{genName} ,
-                                                </ui:repeat>
+                                                #{subirarchivobean.clusterDetalle.nroSolucion}
                                             </td>
                                             <td>
-                                                #{item.cantidad}
+                                                #{subirarchivobean.clusterDetalle.nroCluster}
                                             </td>
                                             <td>
-                                                <a href="#">Ver Detalle Genes</a>
+                                                #{item}
                                             </td>
                                        </tr>
                                     </ui:repeat>                          
