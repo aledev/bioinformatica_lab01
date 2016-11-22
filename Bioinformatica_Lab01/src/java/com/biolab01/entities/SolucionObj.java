@@ -74,6 +74,8 @@ public class SolucionObj implements Serializable{
             
             if(clusAux != null){
                 clusAux.addGenLista(genName);
+                clusAux.addDiccionarioGenLista(genData);
+                clusAux.setNroSolucion(this.nroSolucion);
             }
             else{
                 clusAux = new ClusterObj();

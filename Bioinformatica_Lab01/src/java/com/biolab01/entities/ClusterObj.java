@@ -47,7 +47,7 @@ public class ClusterObj implements Serializable{
      * @return the diccionarioGenes
      */
     public ArrayList<GenDictionary> getDiccionarioGenes() {
-        return diccionarioGenes;
+        return this.diccionarioGenes;
     }
     
     public ArrayList<String> getListaGenes(){
