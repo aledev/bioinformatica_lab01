@@ -173,8 +173,8 @@ public class RankingProcedure {
     
     public void getCommonSubSets(ArrayList<GenRankingObj> arraySolution, ArrayList<int[]> ksubsetA, ArrayList<int[]> ksubsetB){
         // Parcializamos la cantidad de datos para la recursión
-        int init = 0;
-        int grow = 100;
+        /*int init = 0;
+        int grow = 1000;
         boolean isCompleted = false;
         
         for (int[] a : ksubsetA) {
@@ -203,7 +203,37 @@ public class RankingProcedure {
                 
                 getCommonSubSetRecursiveComparison(arraySolution, a, ksubsetBAux, 0);
             }
+        }*/
+        
+        int init = 0;
+        int grow = 10;
+        boolean isCompleted = false;
+        List<int[]> ksubsetAAux = null;
+        
+        while(!isCompleted){
+            ksubsetAAux = new ArrayList<>();
+
+            if(init >= ksubsetA.size()){
+                int diff = init - ksubsetA.size() + 1;
+                ksubsetAAux = ksubsetA.subList(init - diff, ksubsetA.size() - 1);
+                isCompleted = true;
+            }
+            else{
+                if(((init + grow) - 1) > ksubsetA.size()){
+                    ksubsetAAux = ksubsetA.subList(init, ksubsetA.size() - 1);
+                    isCompleted = true;
+                }
+                else{
+                    ksubsetAAux = ksubsetA.subList(init, (init + grow) - 1);
+                    init = init + grow;
+                }
+            }
+
+            this.getCommonSubSetsARecursive(arraySolution, ksubsetAAux, ksubsetB, 0);
         }
+        
+        // Metodo Recursivo
+        //this.getCommonSubSetsARecursive(arraySolution, ksubsetA, ksubsetB, 0);
     }
     
     public void getCommonSubSetsRecursive(ArrayList<GenRankingObj> arraySolution, ArrayList<int[]> ksubsetA, ArrayList<int[]> ksubsetB, int[] ksubSetIdxA, int[] ksubSetIdxB, int idxA, int idxB){
@@ -290,6 +320,42 @@ public class RankingProcedure {
         if(first[indx] != second[indx])
             return false;
         return equalsHelper(first, second, indx + 1);
+    }
+    
+    private void getCommonSubSetsARecursive(ArrayList<GenRankingObj> arraySolution, List<int[]> ksubsetA, ArrayList<int[]> ksubsetB, int idx){
+        if (idx == ksubsetA.size()) {
+            return;
+        } 
+        else {
+            // Obtenemos el subset actual del conjunto "A"
+            int[] ksubsetIdxA = ksubsetA.get(idx);
+            // Parcializamos la cantidad de datos para la recursión
+            int init = 0;
+            int grow = 1000;
+            boolean isCompleted = false;
+            List<int[]> ksubsetBAux = null;
+            
+            while (!isCompleted) {
+                ksubsetBAux = new ArrayList<>();
+
+                if (init >= ksubsetB.size()) {
+                    int diff = init - ksubsetB.size() + 1;
+                    ksubsetBAux = ksubsetB.subList(init - diff, ksubsetB.size() - 1);
+                    isCompleted = true;
+                } else if (((init + grow) - 1) > ksubsetB.size()) {
+                    ksubsetBAux = ksubsetB.subList(init, ksubsetB.size() - 1);
+                    isCompleted = true;
+                } else {
+                    ksubsetBAux = ksubsetB.subList(init, (init + grow) - 1);
+                    init = init + grow;
+                }
+
+                getCommonSubSetRecursiveComparison(arraySolution, ksubsetIdxA, ksubsetBAux, 0);
+            }
+
+            idx++;
+            getCommonSubSetsARecursive(arraySolution, ksubsetA, ksubsetB, idx);
+        }
     }
     
     private void getCommonSubSetRecursiveComparison(ArrayList<GenRankingObj> arraySolution, int[] subsetA, ArrayList<int[]> ksubsetB, int idx){
