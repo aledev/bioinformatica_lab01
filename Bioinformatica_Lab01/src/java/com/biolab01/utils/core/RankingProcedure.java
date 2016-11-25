@@ -20,6 +20,11 @@ import java.util.Set;
  * @author aialiagam
  */
 public class RankingProcedure {
+    //<editor-fold defaultstate="collapsed" desc="propiedades privadas">
+    private final int aux_grow_subset_a = 1000;
+    private final int aux_grow_subset_b = 1000;
+    //</editor-fold>
+    
     //<editor-fold defaultstate="collapsed" desc="constructores">
     public RankingProcedure(){
         
@@ -27,6 +32,8 @@ public class RankingProcedure {
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="metodos publicos">
+    
+    //<editor-fold defaultstate="collapsed" desc="getGenDictionarySubsets">
     public ArrayList<int[]> getGenDictionarySubsets(ArrayList<GenDictionary> genLista, int k){
         int[] superSet = new int[genLista.size()];
         
@@ -58,7 +65,9 @@ public class RankingProcedure {
         
         return subsets;
     }
+    //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="getClusterArrayList">
     public ArrayList<ClusterObj> getClusterArrayList(ArrayList<SolucionObj> solArray, int kGenes){
         ArrayList<ClusterObj> resultObj = new ArrayList<>();
         
@@ -74,7 +83,9 @@ public class RankingProcedure {
         
         return resultObj;
     }
+    //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="getGenDictionarySubsetsRecursive">
     public List<Set<Integer>> getGenDictionarySubsetsRecursive(ArrayList<GenDictionary> genLista, int k){
         List<Integer> superSet = new ArrayList<>();
         
@@ -87,7 +98,9 @@ public class RankingProcedure {
         
         return res;
     }
+    //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="getGenDictionarySubsetsRecursive">
     public void getGenDictionarySubsetsRecursive(ArrayList<int[]> result, int[] A, int k, int start, int currLen, boolean[] used){
         if (currLen == k) {
             int[] subSetAux = new int[k];
@@ -113,7 +126,9 @@ public class RankingProcedure {
         used[start] = false;
         getGenDictionarySubsetsRecursive(result, A, k, start + 1, currLen, used);
     }
+    //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="getGenDictionaryIntValues">
     public int[] getGenDictionaryIntValues(ArrayList<GenDictionary> genLista){
         int[] subset = new int[genLista.size()];
         
@@ -123,7 +138,9 @@ public class RankingProcedure {
         
         return subset;
     }
+    //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="getGenDictionaryRepeatedIntValues">
     public int[] getGenDictionaryRepeatedIntValues(int[] a, int[] b){
         ArrayList<Integer> repeatedAux = new ArrayList<Integer>();
         // Ordenamos los arreglos
@@ -146,7 +163,9 @@ public class RankingProcedure {
         
         return subset;
     }
+    //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="getGenDictionaryInListIntValues">
     public ArrayList<int[]> getGenDictionaryInListIntValues(ArrayList<int[]> kSubSets, int[] fList){
         ArrayList<int[]> objResult = new ArrayList<>();
         // Ordenamos los arreglos
@@ -170,11 +189,13 @@ public class RankingProcedure {
         
         return objResult;
     }
+    //</editor-fold>
     
-    public void getCommonSubSets(ArrayList<GenRankingObj> arraySolution, ArrayList<int[]> ksubsetA, ArrayList<int[]> ksubsetB){
+    //<editor-fold defaultstate="collapsed" desc="getCommonSubSetsIterative">
+    public void getCommonSubSetsIterative(ArrayList<GenRankingObj> arraySolution, ArrayList<int[]> ksubsetA, ArrayList<int[]> ksubsetB){
         // Parcializamos la cantidad de datos para la recursión
-        /*int init = 0;
-        int grow = 1000;
+        int init = 0;
+        int grow = this.aux_grow_subset_b;
         boolean isCompleted = false;
         
         for (int[] a : ksubsetA) {
@@ -203,10 +224,14 @@ public class RankingProcedure {
                 
                 getCommonSubSetRecursiveComparison(arraySolution, a, ksubsetBAux, 0);
             }
-        }*/
-        
+        }
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="getCommonSubSets">   
+    public void getCommonSubSets(ArrayList<GenRankingObj> arraySolution, ArrayList<int[]> ksubsetA, ArrayList<int[]> ksubsetB){
         int init = 0;
-        int grow = 10;
+        int grow = this.aux_grow_subset_a;
         boolean isCompleted = false;
         List<int[]> ksubsetAAux = null;
         
@@ -231,11 +256,10 @@ public class RankingProcedure {
 
             this.getCommonSubSetsARecursive(arraySolution, ksubsetAAux, ksubsetB, 0);
         }
-        
-        // Metodo Recursivo
-        //this.getCommonSubSetsARecursive(arraySolution, ksubsetA, ksubsetB, 0);
     }
+    //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="getCommonSubSetsRecursive">
     public void getCommonSubSetsRecursive(ArrayList<GenRankingObj> arraySolution, ArrayList<int[]> ksubsetA, ArrayList<int[]> ksubsetB, int[] ksubSetIdxA, int[] ksubSetIdxB, int idxA, int idxB){
         if(idxA == ksubsetA.size())
             return;
@@ -262,7 +286,11 @@ public class RankingProcedure {
     }
     //</editor-fold>
     
+    //</editor-fold>
+    
     //<editor-fold defaultstate="collapsed" desc="metodos privados">
+    
+    //<editor-fold defaultstate="collapsed" desc="getSubsets">
     private void getSubsets(List<Integer> superSet, int k, int idx, Set<Integer> current, List<Set<Integer>> solution) {
         //successful stop clause
         if (current.size() == k) {
@@ -279,15 +307,19 @@ public class RankingProcedure {
         //"guess" x is not in the subset
         getSubsets(superSet, k, idx+1, current, solution);
     }
+    //</editor-fold>
     
-     private int[] getSubset(int[] input, int[] subset) {
+    //<editor-fold defaultstate="collapsed" desc="getSubset">
+    private int[] getSubset(int[] input, int[] subset) {
         int[] result = new int[subset.length]; 
         for (int i = 0; i < subset.length; i++) 
             result[i] = input[subset[i]];
         return result;
     }
-     
-     private void addGenRankingToArray(ArrayList<GenRankingObj> arraySolution, int[] genArray){
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="addGenRankingToArray">
+    private void addGenRankingToArray(ArrayList<GenRankingObj> arraySolution, int[] genArray){
         GenRankingObj objResult = null;
         
         for(GenRankingObj grk : arraySolution){
@@ -313,7 +345,9 @@ public class RankingProcedure {
             objResult.setCantidad(objResult.getCantidad()+1);            
         }
     }
-     
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="equalsHelper">
     private boolean equalsHelper(int[] first, int[] second, int indx) {
         if(indx == first.length)
             return true;
@@ -321,7 +355,9 @@ public class RankingProcedure {
             return false;
         return equalsHelper(first, second, indx + 1);
     }
+    //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="getCommonSubSetsARecursive">
     private void getCommonSubSetsARecursive(ArrayList<GenRankingObj> arraySolution, List<int[]> ksubsetA, ArrayList<int[]> ksubsetB, int idx){
         if (idx == ksubsetA.size()) {
             return;
@@ -331,7 +367,7 @@ public class RankingProcedure {
             int[] ksubsetIdxA = ksubsetA.get(idx);
             // Parcializamos la cantidad de datos para la recursión
             int init = 0;
-            int grow = 1000;
+            int grow = this.aux_grow_subset_b;
             boolean isCompleted = false;
             List<int[]> ksubsetBAux = null;
             
@@ -357,7 +393,9 @@ public class RankingProcedure {
             getCommonSubSetsARecursive(arraySolution, ksubsetA, ksubsetB, idx);
         }
     }
+    //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="getCommonSubSetRecursiveComparison">
     private void getCommonSubSetRecursiveComparison(ArrayList<GenRankingObj> arraySolution, int[] subsetA, ArrayList<int[]> ksubsetB, int idx){
         if(idx == ksubsetB.size())
             return;
@@ -370,7 +408,9 @@ public class RankingProcedure {
             getCommonSubSetRecursiveComparison(arraySolution, subsetA, ksubsetB, idx);
         }
     }
+    //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="getCommonSubSetRecursiveComparison">
     private void getCommonSubSetRecursiveComparison(ArrayList<GenRankingObj> arraySolution, int[] subsetA, List<int[]> ksubsetB, int idx){
         if(idx == ksubsetB.size())
             return;
@@ -384,5 +424,7 @@ public class RankingProcedure {
             getCommonSubSetRecursiveComparison(arraySolution, subsetA, ksubsetB, idx);
         }
     }
+    //</editor-fold>
+    
     //</editor-fold>
 }
