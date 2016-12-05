@@ -218,8 +218,9 @@ public class SubirArchivoBean {
             
            //this.solution01();
            //this.solution02();
-           this.solution03();
+           //this.solution03();
            //this.solution04();
+           this.solution05();
         }
         catch(Exception ex){
             // Mostramos la excepción en la consola
@@ -263,6 +264,7 @@ public class SubirArchivoBean {
     
     //<editor-fold defaultstate="collapsed" desc="metodos privados">
    
+    //<editor-fold defaultstate="collapsed" desc="findSolutionByPosition">   
     // Metodo para obtener una solución de acuerdo a una determinada posición
     private SolucionObj findSolutionByPosition(ArrayList<SolucionObj> arraySolucion, int position){
         SolucionObj objResult = null;
@@ -276,7 +278,9 @@ public class SubirArchivoBean {
         
         return objResult;
     }
+    //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="findSolutionByNroSolucion">   
     // Metodo para obtener una solución de acuerdo a un determinado número de solución
     private SolucionObj findSolutionByNroSolucion(ArrayList<SolucionObj> arraySolucion, int nroSolucion){
         SolucionObj objResult = null;
@@ -290,7 +294,9 @@ public class SubirArchivoBean {
         
         return objResult;
     }
+    //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="addGenRankingToArray">
     private void addGenRankingToArray(ArrayList<GenRankingObj> arraySolution, int[] genArray){
         GenRankingObj objResult = null;
         
@@ -317,7 +323,9 @@ public class SubirArchivoBean {
             objResult.setCantidad(objResult.getCantidad()+1);            
         }
     }
+    //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="addGenRankingToArray">
     private void addGenRankingToArray(ArrayList<GenRankingObj> arraySolution, Set<Integer> genArray){
         GenRankingObj objResult = null;
         
@@ -340,7 +348,9 @@ public class SubirArchivoBean {
             objResult.setCantidad(objResult.getCantidad()+1);            
         }
     }
+    //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="addDiccionarioGenToArray">
     private void addDiccionarioGenToArray(GenDictionary gen){
         if(this.genDictionaryArray == null){
             this.genDictionaryArray = new ArrayList();
@@ -352,6 +362,7 @@ public class SubirArchivoBean {
             }
         }
     }
+    //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="solution01">
     private void solution01(){
@@ -587,6 +598,172 @@ public class SubirArchivoBean {
                         // Obtenemos el ranking final de Subconjuntos
                         // Iterativo:
                         ranking.getCommonSubSetsIterative(rankingKSubSets, kSubSetsAI, kSubSetsBI);
+                    }
+                }
+            }
+
+            int maxAux = 0;
+
+            // Obtenemos el valor máximo
+            for (GenRankingObj grk : rankingKSubSets) {
+                if (maxAux == 0) {
+                    maxAux = grk.getCantidad();
+                } else if (grk.getCantidad() > maxAux) {
+                    maxAux = grk.getCantidad();
+                }
+            }
+
+            for (GenRankingObj grk : rankingKSubSets) {
+                if (grk.getCantidad() == maxAux) {
+                    int[] genIdsAux = grk.getGenArray();
+                    ArrayList<String> genNamesAux = new ArrayList<>();
+                    for(int g : genIdsAux){
+                        genNamesAux.add(this.genDictionaryArray.get(g - 1).getNombreGen());
+                    }
+                    grk.setGenNamesArray(genNamesAux);
+                    
+                    finalRankingKSubSets.add(grk);
+                }
+            }
+
+            this.cantidadGenesCalculo = this.genDictionaryArray.size();
+            this.cantidadRankingEncontrados = finalRankingKSubSets.size();
+            this.cantidadGenesPorRanking = maxAux;
+            this.rankingData = finalRankingKSubSets;
+
+            // Obtenemos la cantidad de combinaciones que se pueden hacer con los genes
+            // ArrayList<int[]> kSubSets = ranking.getGenDictionarySubsets(genDictionaryArray, this.cantidadGenesCalculo);
+            System.out.println("Total Clusters: " + totalClusters.size());
+            System.out.println("Cantidad Genes: " + this.genDictionaryArray.size());
+            System.out.println("Ranking Subsets: " + finalRankingKSubSets.size() + ", Cantidad Max: " + maxAux);
+            System.out.println("Total Subconjuntos: " + clusterKSubSets.size());
+
+            // Realizamos el redirect
+            FacesContext.getCurrentInstance().getExternalContext().redirect("ranking.xhtml");
+        }
+        catch(Exception ex){
+            throw ex;
+        }
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="solution05">
+    private void solution05() throws Exception{
+        try {
+            RankingProcedure ranking = new RankingProcedure();
+            ArrayList<ClusterObj> totalClusters = ranking.getClusterArrayList(solucionData, this.cantidadGenesCalculo);
+            ArrayList<int[]> clusterKSubSets = new ArrayList<>();
+            ArrayList<GenRankingObj> rankingKSubSets = new ArrayList<GenRankingObj>();
+            ArrayList<GenRankingObj> finalRankingKSubSets = new ArrayList<GenRankingObj>();
+
+            for (int x = 0; x < totalClusters.size(); x++) {
+                System.out.println("Fecha: " + new Date().toString());
+                System.out.println("Cluster " + x + " de " + totalClusters.size());
+                
+                ArrayList<int[]> kSubSetsA = new ArrayList<>();
+                int[] subsetAuxA = ranking.getGenDictionaryIntValues(totalClusters.get(x).getDiccionarioGenes());
+                boolean[] subsetUsedA = new boolean[subsetAuxA.length];
+                ranking.getGenDictionarySubsetsRecursive(kSubSetsA, subsetAuxA, this.cantidadGenesCalculo, 0, 0, subsetUsedA);
+
+                for (int y = x + 1; y < totalClusters.size(); y++) {
+                    ArrayList<int[]> kSubSetsB = new ArrayList<>();
+                    int[] subsetAuxB = ranking.getGenDictionaryIntValues(totalClusters.get(y).getDiccionarioGenes());
+                    boolean[] subsetUsedB = new boolean[subsetAuxB.length];
+                    ranking.getGenDictionarySubsetsRecursive(kSubSetsB, subsetAuxB, this.cantidadGenesCalculo, 0, 0, subsetUsedB);
+
+                    // Obtenemos la intersección de los arreglos
+                    int[] subsetAuxC = ranking.getGenDictionaryRepeatedIntValues(subsetAuxA, subsetAuxB);
+                    // Verificamos que la intersección al menos contenga un valor
+                    if (subsetAuxC.length > 0) {
+                        // Limpiamos los subsets, y dejamos solamente los subconjuntos con los valores que contengan a la intersección
+                        ArrayList<int[]> kSubSetsAI = ranking.getGenDictionaryInListIntValues(kSubSetsA, subsetAuxC);
+                        ArrayList<int[]> kSubSetsBI = ranking.getGenDictionaryInListIntValues(kSubSetsB, subsetAuxC);
+                        // Obtenemos el ranking final de Subconjuntos
+                        ranking.getCommonSubSetsRandom(rankingKSubSets, kSubSetsAI, kSubSetsBI);
+                    }
+                }
+            }
+
+            int maxAux = 0;
+
+            // Obtenemos el valor máximo
+            for (GenRankingObj grk : rankingKSubSets) {
+                if (maxAux == 0) {
+                    maxAux = grk.getCantidad();
+                } else if (grk.getCantidad() > maxAux) {
+                    maxAux = grk.getCantidad();
+                }
+            }
+
+            for (GenRankingObj grk : rankingKSubSets) {
+                if (grk.getCantidad() == maxAux) {
+                    int[] genIdsAux = grk.getGenArray();
+                    ArrayList<String> genNamesAux = new ArrayList<>();
+                    for(int g : genIdsAux){
+                        genNamesAux.add(this.genDictionaryArray.get(g - 1).getNombreGen());
+                    }
+                    grk.setGenNamesArray(genNamesAux);
+                    
+                    finalRankingKSubSets.add(grk);
+                }
+            }
+
+            this.cantidadGenesCalculo = this.genDictionaryArray.size();
+            this.cantidadRankingEncontrados = finalRankingKSubSets.size();
+            this.cantidadGenesPorRanking = maxAux;
+            this.rankingData = finalRankingKSubSets;
+
+            // Obtenemos la cantidad de combinaciones que se pueden hacer con los genes
+            // ArrayList<int[]> kSubSets = ranking.getGenDictionarySubsets(genDictionaryArray, this.cantidadGenesCalculo);
+            System.out.println("Total Clusters: " + totalClusters.size());
+            System.out.println("Cantidad Genes: " + this.genDictionaryArray.size());
+            System.out.println("Ranking Subsets: " + finalRankingKSubSets.size() + ", Cantidad Max: " + maxAux);
+            System.out.println("Total Subconjuntos: " + clusterKSubSets.size());
+
+            // Realizamos el redirect
+            FacesContext.getCurrentInstance().getExternalContext().redirect("ranking.xhtml");
+        }
+        catch(Exception ex){
+            throw ex;
+        }
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="solution06">
+    private void solution06() throws Exception{
+        try {
+            RankingProcedure ranking = new RankingProcedure();
+            ArrayList<ClusterObj> totalClusters = ranking.getClusterArrayList(solucionData, this.cantidadGenesCalculo);
+            ArrayList<int[]> clusterKSubSets = new ArrayList<>();
+            ArrayList<GenRankingObj> rankingKSubSets = new ArrayList<GenRankingObj>();
+            ArrayList<GenRankingObj> finalRankingKSubSets = new ArrayList<GenRankingObj>();
+
+            for (int x = 0; x < totalClusters.size(); x++) {
+                System.out.println("Fecha: " + new Date().toString());
+                System.out.println("Cluster " + x + " de " + totalClusters.size());
+                
+                ArrayList<int[]> kSubSetsA = new ArrayList<>();
+                int[] subsetAuxA = ranking.getGenDictionaryIntValues(totalClusters.get(x).getDiccionarioGenes());
+                //int[] sampledSubsetAuxA = ranking.getRandomSample(subsetAuxA, (int)Math.round(subsetAuxA.length * 0.15));
+                
+                boolean[] subsetUsedA = new boolean[subsetAuxA.length];
+                ranking.getGenDictionarySubsetsRecursive(kSubSetsA, subsetAuxA, this.cantidadGenesCalculo, 0, 0, subsetUsedA);
+
+                for (int y = x + 1; y < totalClusters.size(); y++) {
+                    ArrayList<int[]> kSubSetsB = new ArrayList<>();
+                    int[] subsetAuxB = ranking.getGenDictionaryIntValues(totalClusters.get(y).getDiccionarioGenes());
+                    boolean[] subsetUsedB = new boolean[subsetAuxB.length];
+                    ranking.getGenDictionarySubsetsRecursive(kSubSetsB, subsetAuxB, this.cantidadGenesCalculo, 0, 0, subsetUsedB);
+
+                    // Obtenemos la intersección de los arreglos
+                    int[] subsetAuxC = ranking.getGenDictionaryRepeatedIntValues(subsetAuxA, subsetAuxB);
+                    // Verificamos que la intersección al menos contenga un valor
+                    if (subsetAuxC.length > 0) {
+                        // Limpiamos los subsets, y dejamos solamente los subconjuntos con los valores que contengan a la intersección
+                        ArrayList<int[]> kSubSetsAI = ranking.getGenDictionaryInListIntValues(kSubSetsA, subsetAuxC);
+                        ArrayList<int[]> kSubSetsBI = ranking.getGenDictionaryInListIntValues(kSubSetsB, subsetAuxC);
+                        // Obtenemos el ranking final de Subconjuntos
+                        ranking.getCommonSubSetsRandom(rankingKSubSets, kSubSetsAI, kSubSetsBI);
                     }
                 }
             }

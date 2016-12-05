@@ -12,7 +12,9 @@ import com.biolab01.entities.SolucionObj;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -23,11 +25,12 @@ public class RankingProcedure {
     //<editor-fold defaultstate="collapsed" desc="propiedades privadas">
     private final int aux_grow_subset_a = 1000;
     private final int aux_grow_subset_b = 1000;
+    private Random rdmGenerator = null;
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="constructores">
     public RankingProcedure(){
-        
+        this.rdmGenerator = new Random();
     }
     //</editor-fold>
     
@@ -228,6 +231,56 @@ public class RankingProcedure {
     }
     //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="getCommonSubSetsRandom">
+    public void getCommonSubSetsRandom(ArrayList<GenRankingObj> arraySolution, ArrayList<int[]> ksubsetA, ArrayList<int[]> ksubsetB) {
+        // Parcializamos la cantidad de datos para la recursión
+        int init = 0;
+        int grow = this.aux_grow_subset_b;
+        boolean isCompleted = false;
+
+        ArrayList<Integer> arrayRdmIndexA = new ArrayList();
+        ArrayList<Integer> arrayRdmIndexB = new ArrayList();
+
+        int avgKSubsetA = (int) Math.round(ksubsetA.size() * 0.15);
+        int avgKSubsetB = (int) Math.round(ksubsetB.size() * 0.15);
+
+        int avgKSubsetAIndex = 0;
+        int avgKSubsetBIndex = 0;
+
+        Random generator = new Random();
+
+        while (avgKSubsetAIndex < avgKSubsetA) {
+            int rdmIndexA = generator.nextInt(ksubsetA.size());
+            rdmIndexA = rdmIndexA > 0 ? rdmIndexA - 1 : rdmIndexA;
+
+            if (!arrayRdmIndexA.contains((Integer) rdmIndexA)) {
+                arrayRdmIndexA.add(rdmIndexA);
+
+                int[] cKSubsetA = ksubsetA.get(rdmIndexA);
+                avgKSubsetBIndex = 0;
+                arrayRdmIndexB.clear();
+
+                while (avgKSubsetBIndex < avgKSubsetB) {
+                    int rdmIndexB = generator.nextInt(ksubsetB.size());
+                    rdmIndexB = rdmIndexB > 0 ? rdmIndexB - 1 : rdmIndexB;
+
+                    if (!arrayRdmIndexB.contains((Integer) rdmIndexB)) {
+                        arrayRdmIndexB.add(rdmIndexB);
+
+                        int[] cKSubsetB = ksubsetB.get(rdmIndexB);
+
+                        if (this.equalsHelper(cKSubsetA, cKSubsetB, 0)) {
+                            this.addGenRankingToArray(arraySolution, cKSubsetB);
+                        }
+                    }
+                    avgKSubsetBIndex++;
+                }
+            }
+            avgKSubsetAIndex++;
+        }
+    }
+    //</editor-fold>
+    
     //<editor-fold defaultstate="collapsed" desc="getCommonSubSets">   
     public void getCommonSubSets(ArrayList<GenRankingObj> arraySolution, ArrayList<int[]> ksubsetA, ArrayList<int[]> ksubsetB){
         int init = 0;
@@ -283,6 +336,39 @@ public class RankingProcedure {
         }    
         
         getCommonSubSetsRecursive(arraySolution, ksubsetA, ksubsetB, ksubSetIdxA, ksubSetIdxB, idxA, idxB);
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="getRandomSample">
+    public ArrayList<int[]> getRandomSample(ArrayList<int[]> values, int sampleSize) throws IllegalArgumentException {
+        if (values == null) {
+            throw new IllegalArgumentException("Must provide values from which to sample!");
+        }
+ 
+        ArrayList<int[]> sampledArray = new ArrayList<>();
+        int[] randomSample = new int[sampleSize];
+        //Iterator<Integer> valueIterator = valuesiterator();
+ 
+        for (int sampleIndex = 0; sampleIndex < values.size(); ++sampleIndex){//sampleIndex = 0; valueIterator.hasNext(); ++sampleIndex) {
+            Integer value = sampleIndex; //valueIterator.next();
+ 
+            if (sampleIndex < sampleSize) {
+                randomSample[sampleIndex] = value;
+            } else {
+                int randomNumber = getRandomIntegerInRange(0, sampleIndex);
+ 
+                if (randomNumber < sampleSize) {
+                    randomSample[randomNumber] = value;
+                }
+            }
+        }
+ 
+        for(int i : randomSample){
+            sampledArray.add(values.get(i));
+        }
+        
+        //return randomSample;
+        return sampledArray;
     }
     //</editor-fold>
     
@@ -423,6 +509,12 @@ public class RankingProcedure {
             idx++;
             getCommonSubSetRecursiveComparison(arraySolution, subsetA, ksubsetB, idx);
         }
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="getRandomIntegerInRange">
+    private int getRandomIntegerInRange(int min, int max) {
+        return min + rdmGenerator.nextInt((max - min) + 1);
     }
     //</editor-fold>
     
