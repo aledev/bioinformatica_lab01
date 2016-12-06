@@ -341,33 +341,33 @@ public class RankingProcedure {
     
     //<editor-fold defaultstate="collapsed" desc="getRandomSample">
     public ArrayList<int[]> getRandomSample(ArrayList<int[]> values, int sampleSize) throws IllegalArgumentException {
+        ArrayList<int[]> sampledArray = new ArrayList<>();
+        
         if (values == null) {
             throw new IllegalArgumentException("Must provide values from which to sample!");
         }
- 
-        ArrayList<int[]> sampledArray = new ArrayList<>();
-        int[] randomSample = new int[sampleSize];
-        //Iterator<Integer> valueIterator = valuesiterator();
- 
-        for (int sampleIndex = 0; sampleIndex < values.size(); ++sampleIndex){//sampleIndex = 0; valueIterator.hasNext(); ++sampleIndex) {
-            Integer value = sampleIndex; //valueIterator.next();
- 
-            if (sampleIndex < sampleSize) {
-                randomSample[sampleIndex] = value;
-            } else {
-                int randomNumber = getRandomIntegerInRange(0, sampleIndex);
- 
-                if (randomNumber < sampleSize) {
-                    randomSample[randomNumber] = value;
+        if(values.size() > 0){
+            ArrayList<Integer> randomSample = new ArrayList();
+
+            if(sampleSize > values.size()){
+                sampleSize = values.size();
+            }
+            
+            for (int sampleIndex = 0; sampleIndex < sampleSize; ++sampleIndex){
+                Integer value = getRandomIntegerInRange(0, values.size()); 
+
+                while(randomSample.contains(value)){
+                    value = getRandomIntegerInRange(0, values.size()); 
                 }
+
+                randomSample.add(value);
+            }
+
+            for(int i : randomSample){
+                sampledArray.add(values.get(i));
             }
         }
- 
-        for(int i : randomSample){
-            sampledArray.add(values.get(i));
-        }
         
-        //return randomSample;
         return sampledArray;
     }
     //</editor-fold>
@@ -514,7 +514,9 @@ public class RankingProcedure {
     
     //<editor-fold defaultstate="collapsed" desc="getRandomIntegerInRange">
     private int getRandomIntegerInRange(int min, int max) {
-        return min + rdmGenerator.nextInt((max - min) + 1);
+        int value = min + rdmGenerator.nextInt(max);
+        value = value > 0 ? value - 1 : value;
+        return value;
     }
     //</editor-fold>
     

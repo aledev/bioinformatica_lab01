@@ -220,7 +220,8 @@ public class SubirArchivoBean {
            //this.solution02();
            //this.solution03();
            //this.solution04();
-           this.solution05();
+           //this.solution05();
+           this.solution06();
         }
         catch(Exception ex){
             // Mostramos la excepción en la consola
@@ -744,17 +745,25 @@ public class SubirArchivoBean {
                 
                 ArrayList<int[]> kSubSetsA = new ArrayList<>();
                 int[] subsetAuxA = ranking.getGenDictionaryIntValues(totalClusters.get(x).getDiccionarioGenes());
-                //int[] sampledSubsetAuxA = ranking.getRandomSample(subsetAuxA, (int)Math.round(subsetAuxA.length * 0.15));
-                
                 boolean[] subsetUsedA = new boolean[subsetAuxA.length];
                 ranking.getGenDictionarySubsetsRecursive(kSubSetsA, subsetAuxA, this.cantidadGenesCalculo, 0, 0, subsetUsedA);
+                // Obtenemos una muestra del 15% del subconjunto A
+                int sampleIndexA = (int)Math.round(kSubSetsA.size() * 0.15);
+                if(sampleIndexA > 0){
+                    kSubSetsA = ranking.getRandomSample(kSubSetsA, sampleIndexA);
+                }
 
                 for (int y = x + 1; y < totalClusters.size(); y++) {
                     ArrayList<int[]> kSubSetsB = new ArrayList<>();
                     int[] subsetAuxB = ranking.getGenDictionaryIntValues(totalClusters.get(y).getDiccionarioGenes());
                     boolean[] subsetUsedB = new boolean[subsetAuxB.length];
                     ranking.getGenDictionarySubsetsRecursive(kSubSetsB, subsetAuxB, this.cantidadGenesCalculo, 0, 0, subsetUsedB);
-
+                    // Obtenemos un muestra del 15% del subconjunto B
+                    int sampleIndexB = (int)Math.round(kSubSetsB.size() * 0.15);
+                    if(sampleIndexB > 0){
+                        kSubSetsB = ranking.getRandomSample(kSubSetsB, (int)Math.round(kSubSetsB.size() * 0.15));
+                    }
+                    
                     // Obtenemos la intersección de los arreglos
                     int[] subsetAuxC = ranking.getGenDictionaryRepeatedIntValues(subsetAuxA, subsetAuxB);
                     // Verificamos que la intersección al menos contenga un valor
@@ -763,7 +772,8 @@ public class SubirArchivoBean {
                         ArrayList<int[]> kSubSetsAI = ranking.getGenDictionaryInListIntValues(kSubSetsA, subsetAuxC);
                         ArrayList<int[]> kSubSetsBI = ranking.getGenDictionaryInListIntValues(kSubSetsB, subsetAuxC);
                         // Obtenemos el ranking final de Subconjuntos
-                        ranking.getCommonSubSetsRandom(rankingKSubSets, kSubSetsAI, kSubSetsBI);
+                        // Iterativo:
+                        ranking.getCommonSubSets(rankingKSubSets, kSubSetsAI, kSubSetsBI);
                     }
                 }
             }
