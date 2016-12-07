@@ -747,33 +747,71 @@ public class SubirArchivoBean {
                 int[] subsetAuxA = ranking.getGenDictionaryIntValues(totalClusters.get(x).getDiccionarioGenes());
                 boolean[] subsetUsedA = new boolean[subsetAuxA.length];
                 ranking.getGenDictionarySubsetsRecursive(kSubSetsA, subsetAuxA, this.cantidadGenesCalculo, 0, 0, subsetUsedA);
-                // Obtenemos una muestra del 15% del subconjunto A
-                int sampleIndexA = (int)Math.round(kSubSetsA.size() * 0.15);
-                if(sampleIndexA > 0){
-                    kSubSetsA = ranking.getRandomSample(kSubSetsA, sampleIndexA);
+                
+                // Si la cantidad de genes esta entre 1000 y 10000 obtenemos un muestreo del 15%
+                if(kSubSetsA.size() > 1000 && kSubSetsA.size() < 10000){
+                    // Obtenemos una muestra del 15% del subconjunto A
+                    int sampleIndexA = (int)Math.round(kSubSetsA.size() * 0.15);
+                    if(sampleIndexA > 0){
+                        kSubSetsA = ranking.getRandomSample(kSubSetsA, sampleIndexA);
+                    }
+                }
+                else{
+                    // En caso contrario ...
+                    // Obtenemos solo 10000 genes al azar
+                    int sampleIndexA = (int)Math.round(kSubSetsA.size() * 0.15);
+                    if(sampleIndexA > 0){
+                        if(sampleIndexA > 10000){
+                            sampleIndexA = 10000;
+                        }
+                        
+                        kSubSetsA = ranking.getRandomSample(kSubSetsA, sampleIndexA);
+                    }
                 }
 
                 for (int y = x + 1; y < totalClusters.size(); y++) {
-                    ArrayList<int[]> kSubSetsB = new ArrayList<>();
-                    int[] subsetAuxB = ranking.getGenDictionaryIntValues(totalClusters.get(y).getDiccionarioGenes());
-                    boolean[] subsetUsedB = new boolean[subsetAuxB.length];
-                    ranking.getGenDictionarySubsetsRecursive(kSubSetsB, subsetAuxB, this.cantidadGenesCalculo, 0, 0, subsetUsedB);
-                    // Obtenemos un muestra del 15% del subconjunto B
-                    int sampleIndexB = (int)Math.round(kSubSetsB.size() * 0.15);
-                    if(sampleIndexB > 0){
-                        kSubSetsB = ranking.getRandomSample(kSubSetsB, (int)Math.round(kSubSetsB.size() * 0.15));
+                    try{
+                        ArrayList<int[]> kSubSetsB = new ArrayList<>();
+                        int[] subsetAuxB = ranking.getGenDictionaryIntValues(totalClusters.get(y).getDiccionarioGenes());
+                        boolean[] subsetUsedB = new boolean[subsetAuxB.length];
+                        ranking.getGenDictionarySubsetsRecursive(kSubSetsB, subsetAuxB, this.cantidadGenesCalculo, 0, 0, subsetUsedB);
+                        
+                        // Si la cantidad de genes esta entre 1000 y 10000 obtenemos un muestreo del 15%
+                        if(kSubSetsB.size() > 1000 && kSubSetsB.size() < 10000){
+                            // Obtenemos un muestra del 5% del subconjunto B
+                            int sampleIndexB = (int)Math.round(kSubSetsB.size() * 0.15);
+                            if(sampleIndexB > 0){
+                                kSubSetsB = ranking.getRandomSample(kSubSetsB, sampleIndexB);
+                            }
+                        }
+                        else{
+                            // En caso contrario ...
+                            // Obtenemos solo 10000 genes al azar
+                            int sampleIndexB = (int)Math.round(kSubSetsB.size() * 0.15);
+                            if(sampleIndexB > 0){
+                                if(sampleIndexB > 10000){
+                                    sampleIndexB = 10000;
+                                }
+
+                                kSubSetsB = ranking.getRandomSample(kSubSetsB, sampleIndexB);
+                            }
+                        }
+
+                        // Obtenemos la intersección de los arreglos
+                        int[] subsetAuxC = ranking.getGenDictionaryRepeatedIntValues(subsetAuxA, subsetAuxB);
+                        // Verificamos que la intersección al menos contenga un valor
+                        if (subsetAuxC.length > 0) {
+                            // Limpiamos los subsets, y dejamos solamente los subconjuntos con los valores que contengan a la intersección
+                            ArrayList<int[]> kSubSetsAI = ranking.getGenDictionaryInListIntValues(kSubSetsA, subsetAuxC);
+                            ArrayList<int[]> kSubSetsBI = ranking.getGenDictionaryInListIntValues(kSubSetsB, subsetAuxC);
+                            // Obtenemos el ranking final de Subconjuntos
+                            // Iterativo:
+                            ranking.getCommonSubSets(rankingKSubSets, kSubSetsAI, kSubSetsBI);
+                        }
                     }
-                    
-                    // Obtenemos la intersección de los arreglos
-                    int[] subsetAuxC = ranking.getGenDictionaryRepeatedIntValues(subsetAuxA, subsetAuxB);
-                    // Verificamos que la intersección al menos contenga un valor
-                    if (subsetAuxC.length > 0) {
-                        // Limpiamos los subsets, y dejamos solamente los subconjuntos con los valores que contengan a la intersección
-                        ArrayList<int[]> kSubSetsAI = ranking.getGenDictionaryInListIntValues(kSubSetsA, subsetAuxC);
-                        ArrayList<int[]> kSubSetsBI = ranking.getGenDictionaryInListIntValues(kSubSetsB, subsetAuxC);
-                        // Obtenemos el ranking final de Subconjuntos
-                        // Iterativo:
-                        ranking.getCommonSubSets(rankingKSubSets, kSubSetsAI, kSubSetsBI);
+                    catch(Exception inEx){
+                        System.out.printf("Error en clusters: %d,%d",x, y);
+                        System.out.println("Detalle Error: " + inEx.getMessage());
                     }
                 }
             }
