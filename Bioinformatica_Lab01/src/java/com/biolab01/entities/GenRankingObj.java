@@ -17,6 +17,8 @@ public class GenRankingObj {
     private int[] genArray;
     private Set<Integer> genSet;
     private int cantidad;
+    private double similaridadJaccard;
+    private double similaridadSorensen;
     private ArrayList<String> genNamesArray;
     
     public GenRankingObj(){
@@ -44,6 +46,14 @@ public class GenRankingObj {
         return genArray;
     }
 
+    public double getSimilaridadJaccard(){
+        return this.similaridadJaccard;
+    }
+    
+    public double getSimilaridadSorensen(){
+        return this.similaridadSorensen;
+    }
+    
     /**
      * @param genArray the genArray to set
      */
@@ -91,5 +101,13 @@ public class GenRankingObj {
      */
     public void setGenNamesArray(ArrayList<String> genNamesArray) {
         this.genNamesArray = genNamesArray;
+    }
+    
+    public void setSimilaridadJaccard(double similaridadJaccard){
+        this.similaridadJaccard = similaridadJaccard;
+    }
+    
+    public void setSimilaridadSorensen(double similaridadSorensen){
+        this.similaridadSorensen = similaridadSorensen;
     }
 }

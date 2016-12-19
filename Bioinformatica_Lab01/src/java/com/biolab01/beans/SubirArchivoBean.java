@@ -10,6 +10,8 @@ import com.biolab01.entities.GenDictionary;
 import com.biolab01.entities.GenRankingObj;
 import com.biolab01.entities.SolucionObj;
 import com.biolab01.utils.core.RankingProcedure;
+import com.biolab01.utils.similarity.JaccardSimilarity;
+import com.biolab01.utils.similarity.SorensenSimilarity;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +46,7 @@ public class SubirArchivoBean {
     private int cantidadRankingEncontrados;
     private int cantidadGenesPorRanking;
     private ArrayList<GenRankingObj> rankingData;
+    private int maxGenKubsets = 1000;
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="metodos accesores">
@@ -499,13 +502,13 @@ public class SubirArchivoBean {
                 ArrayList<int[]> kSubSetsA = new ArrayList<>();
                 int[] subsetAuxA = ranking.getGenDictionaryIntValues(totalClusters.get(x).getDiccionarioGenes());
                 boolean[] subsetUsedA = new boolean[subsetAuxA.length];
-                ranking.getGenDictionarySubsetsRecursive(kSubSetsA, subsetAuxA, this.cantidadGenesCalculo, 0, 0, subsetUsedA);
+                ranking.getGenDictionarySubsetsRecursive(kSubSetsA, subsetAuxA, this.cantidadGenesCalculo, 0, 0, subsetUsedA, maxGenKubsets);
 
                 for (int y = x + 1; y < totalClusters.size(); y++) {
                     ArrayList<int[]> kSubSetsB = new ArrayList<>();
                     int[] subsetAuxB = ranking.getGenDictionaryIntValues(totalClusters.get(y).getDiccionarioGenes());
                     boolean[] subsetUsedB = new boolean[subsetAuxB.length];
-                    ranking.getGenDictionarySubsetsRecursive(kSubSetsB, subsetAuxB, this.cantidadGenesCalculo, 0, 0, subsetUsedB);
+                    ranking.getGenDictionarySubsetsRecursive(kSubSetsB, subsetAuxB, this.cantidadGenesCalculo, 0, 0, subsetUsedB, maxGenKubsets);
 
                     // Obtenemos la intersección de los arreglos
                     int[] subsetAuxC = ranking.getGenDictionaryRepeatedIntValues(subsetAuxA, subsetAuxB);
@@ -584,13 +587,13 @@ public class SubirArchivoBean {
                 ArrayList<int[]> kSubSetsA = new ArrayList<>();
                 int[] subsetAuxA = ranking.getGenDictionaryIntValues(totalClusters.get(x).getDiccionarioGenes());
                 boolean[] subsetUsedA = new boolean[subsetAuxA.length];
-                ranking.getGenDictionarySubsetsRecursive(kSubSetsA, subsetAuxA, this.cantidadGenesCalculo, 0, 0, subsetUsedA);
+                ranking.getGenDictionarySubsetsRecursive(kSubSetsA, subsetAuxA, this.cantidadGenesCalculo, 0, 0, subsetUsedA, maxGenKubsets);
 
                 for (int y = x + 1; y < totalClusters.size(); y++) {
                     ArrayList<int[]> kSubSetsB = new ArrayList<>();
                     int[] subsetAuxB = ranking.getGenDictionaryIntValues(totalClusters.get(y).getDiccionarioGenes());
                     boolean[] subsetUsedB = new boolean[subsetAuxB.length];
-                    ranking.getGenDictionarySubsetsRecursive(kSubSetsB, subsetAuxB, this.cantidadGenesCalculo, 0, 0, subsetUsedB);
+                    ranking.getGenDictionarySubsetsRecursive(kSubSetsB, subsetAuxB, this.cantidadGenesCalculo, 0, 0, subsetUsedB, maxGenKubsets);
 
                     // Obtenemos la intersección de los arreglos
                     int[] subsetAuxC = ranking.getGenDictionaryRepeatedIntValues(subsetAuxA, subsetAuxB);
@@ -667,13 +670,13 @@ public class SubirArchivoBean {
                 ArrayList<int[]> kSubSetsA = new ArrayList<>();
                 int[] subsetAuxA = ranking.getGenDictionaryIntValues(totalClusters.get(x).getDiccionarioGenes());
                 boolean[] subsetUsedA = new boolean[subsetAuxA.length];
-                ranking.getGenDictionarySubsetsRecursive(kSubSetsA, subsetAuxA, this.cantidadGenesCalculo, 0, 0, subsetUsedA);
+                ranking.getGenDictionarySubsetsRecursive(kSubSetsA, subsetAuxA, this.cantidadGenesCalculo, 0, 0, subsetUsedA, maxGenKubsets);
 
                 for (int y = x + 1; y < totalClusters.size(); y++) {
                     ArrayList<int[]> kSubSetsB = new ArrayList<>();
                     int[] subsetAuxB = ranking.getGenDictionaryIntValues(totalClusters.get(y).getDiccionarioGenes());
                     boolean[] subsetUsedB = new boolean[subsetAuxB.length];
-                    ranking.getGenDictionarySubsetsRecursive(kSubSetsB, subsetAuxB, this.cantidadGenesCalculo, 0, 0, subsetUsedB);
+                    ranking.getGenDictionarySubsetsRecursive(kSubSetsB, subsetAuxB, this.cantidadGenesCalculo, 0, 0, subsetUsedB, maxGenKubsets);
 
                     // Obtenemos la intersección de los arreglos
                     int[] subsetAuxC = ranking.getGenDictionaryRepeatedIntValues(subsetAuxA, subsetAuxB);
@@ -751,7 +754,7 @@ public class SubirArchivoBean {
                 ArrayList<int[]> kSubSetsA = new ArrayList<>();
                 int[] subsetAuxA = ranking.getGenDictionaryIntValues(totalClusters.get(x).getDiccionarioGenes());
                 boolean[] subsetUsedA = new boolean[subsetAuxA.length];
-                ranking.getGenDictionarySubsetsRecursive(kSubSetsA, subsetAuxA, this.cantidadGenesCalculo, 0, 0, subsetUsedA);
+                ranking.getGenDictionarySubsetsRecursive(kSubSetsA, subsetAuxA, this.cantidadGenesCalculo, 0, 0, subsetUsedA, maxGenKubsets);
                 
                 // Si la cantidad de genes esta entre 1000 y 10000 obtenemos un muestreo del 15%
                 if(kSubSetsA.size() > 1000 && kSubSetsA.size() < 10000){
@@ -779,7 +782,7 @@ public class SubirArchivoBean {
                         ArrayList<int[]> kSubSetsB = new ArrayList<>();
                         int[] subsetAuxB = ranking.getGenDictionaryIntValues(totalClusters.get(y).getDiccionarioGenes());
                         boolean[] subsetUsedB = new boolean[subsetAuxB.length];
-                        ranking.getGenDictionarySubsetsRecursive(kSubSetsB, subsetAuxB, this.cantidadGenesCalculo, 0, 0, subsetUsedB);
+                        ranking.getGenDictionarySubsetsRecursive(kSubSetsB, subsetAuxB, this.cantidadGenesCalculo, 0, 0, subsetUsedB, maxGenKubsets);
                         
                         // Si la cantidad de genes esta entre 1000 y 10000 obtenemos un muestreo del 15%
                         if(kSubSetsB.size() > 1000 && kSubSetsB.size() < 10000){
@@ -822,7 +825,8 @@ public class SubirArchivoBean {
             }
 
             int maxAux = 0;
-
+            
+            /*
             // Obtenemos el valor máximo
             for (GenRankingObj grk : rankingKSubSets) {
                 if (maxAux == 0) {
@@ -843,7 +847,9 @@ public class SubirArchivoBean {
                     
                     finalRankingKSubSets.add(grk);
                 }
-            }
+            }*/
+            
+            this.getRankingFinalSubSets(maxAux, rankingKSubSets, finalRankingKSubSets);
 
             this.cantidadGenesCalculo = this.genDictionaryArray.size();
             this.cantidadRankingEncontrados = finalRankingKSubSets.size();
@@ -865,6 +871,76 @@ public class SubirArchivoBean {
         }
     }
     //</editor-fold>
+    
+    private void getRankingFinalSubSets(int maxAux, ArrayList<GenRankingObj> rankingKSubSets, ArrayList<GenRankingObj> finalRankingKSubSets) {
+        JaccardSimilarity jSimilarity = new JaccardSimilarity();
+        SorensenSimilarity sSimilarity = new SorensenSimilarity();
+        
+        // Obtenemos el valor máximo
+        for (GenRankingObj grk : rankingKSubSets) {
+            if (maxAux == 0) {
+                maxAux = grk.getCantidad();
+            } else if (grk.getCantidad() > maxAux) {
+                maxAux = grk.getCantidad();
+            }
+        }
+        
+        int index = 0;
+        
+        for (GenRankingObj grk : rankingKSubSets) {
+            if (grk.getCantidad() == maxAux) {
+                int[] genIdsAux = grk.getGenArray();
+                ArrayList<String> genNamesAux = new ArrayList<>();
+                String genSubSetA = "";
+                
+                int indexA = 0;
+                for (int g : genIdsAux) {
+                    indexA++;
+                    
+                    String genName = this.genDictionaryArray.get(g - 1).getNombreGen();
+                    genNamesAux.add(this.genDictionaryArray.get(g - 1).getNombreGen());
+                    genSubSetA += genName;
+                    
+                    if(indexA < genIdsAux.length){
+                        genSubSetA += ",";
+                    }
+                }
+                grk.setGenNamesArray(genNamesAux);
+
+                if(index > 0){
+                    
+                    String genSubSetB = "";
+                    String genNamesCompleteB = "";
+                    GenRankingObj lastNeightbor = finalRankingKSubSets.get(index-1);
+                    
+                    int indexB = 0;
+                    for(String g : lastNeightbor.getGenNamesArray()){
+                        indexB++;
+                        
+                        genSubSetB += g;
+                        
+                        if(indexB < lastNeightbor.getGenNamesArray().size()){
+                            genNamesCompleteB += ",";
+                        }
+                    }
+                    
+                    double jaccardIndex = jSimilarity.calculate(genSubSetA, genSubSetB);
+                    double sorensenIndex = sSimilarity.calculate(genSubSetA, genSubSetB);
+                    
+                    grk.setSimilaridadJaccard(jaccardIndex);
+                    grk.setSimilaridadSorensen(sorensenIndex);
+                }
+                else{
+                    grk.setSimilaridadJaccard(0);
+                    grk.setSimilaridadSorensen(0);
+                }
+                
+                finalRankingKSubSets.add(grk);
+            }
+            
+            index++;
+        }
+    }
     
     //</editor-fold>
 }

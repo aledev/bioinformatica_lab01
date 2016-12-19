@@ -104,7 +104,10 @@ public class RankingProcedure {
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="getGenDictionarySubsetsRecursive">
-    public void getGenDictionarySubsetsRecursive(ArrayList<int[]> result, int[] A, int k, int start, int currLen, boolean[] used){
+    public void getGenDictionarySubsetsRecursive(ArrayList<int[]> result, int[] A, int k, int start, int currLen, boolean[] used, int maxLength){
+        if(currLen == maxLength){
+            return;
+        }
         if (currLen == k) {
             int[] subSetAux = new int[k];
             int ssai = 0;
@@ -123,11 +126,45 @@ public class RankingProcedure {
         // For every index we have two options,
         // 1.. Either we select it, means put true in used[] and make currLen+1
         used[start] = true;
-        getGenDictionarySubsetsRecursive(result, A, k, start + 1, currLen + 1, used);
+        getGenDictionarySubsetsRecursive(result, A, k, start + 1, currLen + 1, used, maxLength);
         // 2.. OR we dont select it, means put false in used[] and dont increase
         // currLen
         used[start] = false;
-        getGenDictionarySubsetsRecursive(result, A, k, start + 1, currLen, used);
+        getGenDictionarySubsetsRecursive(result, A, k, start + 1, currLen, used, maxLength);
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="comment">
+    public ArrayList<int[]> getRandomGenDictionarySubset(ArrayList<GenDictionary> genLista, int k){
+        int[] superSet = new int[genLista.size()];
+        
+        for(int x = 0; x < genLista.size(); x++){
+            superSet[x] = genLista.get(x).getNumeroGen();
+        }
+        
+        ArrayList<int[]> subsets = new ArrayList<>();
+        int[] s = new int[k]; // here we'll keep indices pointing to elements in input array
+        if (k <= superSet.length) {
+            // first index sequence: 0, 1, 2, ...
+            for (int i = 0; (s[i] = i) < k - 1; i++);  
+            subsets.add(getSubset(superSet, s));
+            for(;;) {
+                int i;
+                // find position of item that can be incremented
+                for (i = k - 1; i >= 0 && s[i] == superSet.length - k + i; i--); 
+                if (i < 0) {
+                    break;
+                } else {
+                    s[i]++;                    // increment this item
+                    for (++i; i < k; i++) {    // fill up remaining items
+                        s[i] = s[i - 1] + 1; 
+                    }
+                    subsets.add(getSubset(superSet, s));
+                }
+            }
+        }
+        
+        return subsets;
     }
     //</editor-fold>
     
