@@ -201,6 +201,9 @@ public class SubirArchivoBean {
             
             // Mostramos la cantidad de genes en la consola
             System.out.println("Cantidad de Genes: " + cantidadGenes);
+            
+             // Realizamos el redirect
+            FacesContext.getCurrentInstance().getExternalContext().redirect("inicio.xhtml");
         }
         catch(Exception ex){
             // Mostramos la excepción en la consola
@@ -733,6 +736,8 @@ public class SubirArchivoBean {
     //<editor-fold defaultstate="collapsed" desc="solution06">
     private void solution06() throws Exception{
         try {
+            int minValue = 1000;
+            int maxValue = 5000;
             RankingProcedure ranking = new RankingProcedure();
             ArrayList<ClusterObj> totalClusters = ranking.getClusterArrayList(solucionData, this.cantidadGenesCalculo);
             ArrayList<int[]> clusterKSubSets = new ArrayList<>();

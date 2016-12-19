@@ -1,0 +1,160 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Bioinformática - Ranking de Genes</title>
+        <h:outputStylesheet name="css/bootstrap.min.css"/>
+        <h:outputStylesheet name="css/bootstrap-theme.min.css"/>
+        <h:outputStylesheet name="css/template.css"/>
+    </h:head>
+    <h:body>
+        <h:outputScript name="js/jquery-3.1.0.min.js"></h:outputScript>
+        <h:outputScript name="js/bootstrap.min.js"></h:outputScript>
+        <h:outputScript name="js/utils.js"></h:outputScript>
+            
+        <script type="text/javascript">
+            $(document).ready(function(){
+                var errorMessage = '#{subirarchivobean.errorMessage}';
+                var fileName = '#{subirarchivobean.nombreArchivo}';
+                
+                // Comprobar mensaje de error
+                if(errorMessage != ''){
+                    $('#divErrorMessage').html(errorMessage);
+                    $('#divErrorMessage').show();
+                }
+                else{
+                    $('#divErrorMessage').html('');
+                    $('#divErrorMessage').hide();
+                    
+                    // Comprobar nombre de archivo
+                    if(fileName != ''){
+                        $('#lstDataTitle').text('Ranking de Genes (' + fileName + ')');
+                    }
+                    else{
+                        $('#lstDataTitle').text('Ranking de Genes');
+                    }
+                }
+            });
+        </script>
+        
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+         <div class="container">
+           <div class="navbar-header">
+               <a class="navbar-brand" href="#">Bioinform&aacute;tica - Ranking de Genes</a>
+           </div>
+           <div id="navbar" class="collapse navbar-collapse">
+           </div><!--/.nav-collapse -->
+         </div>
+       </nav>
+
+        <div class="container">
+
+          <div class="starter-template">
+              
+              <div id="divErrorMessage" class="alert alert-danger" style="display:none"></div>
+              
+              <h:form id="frmProcesar" enctype="multipart/form-data">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><a href="#" onclick="ShowHideFilter(this)">
+                            <span class="glyphicon glyphicon-menu-up"></span></a> &nbsp; Ingreso de Datos
+                        </h3>
+                    </div>
+                    <div class="panel-body form-horizontal">
+                        <div class="form-group">
+                            <div class="col-xs-6 col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label col-sm-4" for="ipfArchivo">Archivo</label>
+                                    <div class="col-sm-8">     
+                                        <h:inputFile id="ipfArchivo" value="#{subirarchivobean.archivo}"></h:inputFile>&nbsp;
+                                    </div>
+                                </div>
+                            </div>
+                            <label class="control-label col-sm-4" for="ddlCantidadGenes">Cantidad Genes</label>
+                            <div class="col-xs-6 col-md-4">
+                                <h:selectOneMenu class="form-control" id="ddlCantidadGenes" value="#{subirarchivobean.cantidadGenesCalculo}">
+                                    <f:selectItem itemValue="2" itemLabel="2 Genes" />	
+                                    <f:selectItem itemValue="3" itemLabel="3 Genes" />	
+                                    <f:selectItem itemValue="4" itemLabel="4 Genes" />	
+                                    <f:selectItem itemValue="5" itemLabel="5 Genes" />	
+                                    <f:selectItem itemValue="6" itemLabel="6 Genes" />	
+                                    <f:selectItem itemValue="7" itemLabel="7 Genes" />	
+                                    <f:selectItem itemValue="8" itemLabel="8 Genes" />	
+                                    <f:selectItem itemValue="9" itemLabel="9 Genes" />	
+                                    <f:selectItem itemValue="10" itemLabel="10 Genes" />		
+                                </h:selectOneMenu>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-xs-6 col-md-4">
+                                <h:commandButton id="btnRealizarRanking" action="#{subirarchivobean.calcularRanking}" 
+                                                 value="Realizar Ranking" class="btn btn-primary"></h:commandButton>
+                            </div>
+                            <div class="col-xs-6 col-md-4"></div>
+                            <div class="col-xs-6 col-md-4"></div>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+              
+            <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 id="lstDataTitle" class="panel-title">Ranking de Soluciones</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="table-responsive">
+                            <table id="dgvListaDatos" class="table table-hover table-striped table-custom">
+                                <thead>
+                                    <tr>
+                                        <th>N°</th>
+                                        <th>Soluci&oacute;n</th>
+                                        <th>Cluster</th>
+                                        <th>Cantidad Genes</th>
+                                        <th>Genes</th>
+                                        <th>&nbsp;</th>
+                                    </tr>                
+                                </thead>
+                                <tbody>
+                                    <ui:repeat value="#{subirarchivobean.solucionData}" var="item">
+                                        <ui:repeat value="#{item.clusterData}" var="cluster">
+                                            <tr>
+                                               <td>
+                                                   #{item.position}
+                                               </td>
+                                               <td>
+                                                   #{item.nroSolucion}
+                                               </td>
+                                               <td>
+                                                   #{cluster.nroCluster}
+                                               </td>
+                                               <td>
+                                                   #{cluster.listaGenes.size()}
+                                               </td>
+                                               <td style="max-width:300px;text-overflow:ellipsis;white-space:nowrap;overflow:hidden">
+                                                    <ui:repeat value="#{cluster.listaGenes}" var="gen">
+                                                        #{gen},&nbsp;
+                                                    </ui:repeat>
+                                               </td>
+                                               <td>
+                                                    <h:form>
+                                                        <h:commandLink action="#{subirarchivobean.verDetalleGenes(item.position, cluster.nroCluster)}" value="Ver Genes">
+                                                        </h:commandLink>
+                                                    </h:form>
+                                               </td>
+                                           </tr>
+                                        </ui:repeat>
+                                    </ui:repeat>                          
+                                </tbody>
+                            </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.container -->
+    </h:body>
+</html>
