@@ -13,6 +13,8 @@ import com.biolab01.utils.core.RankingProcedure;
 import com.biolab01.utils.similarity.JaccardSimilarity;
 import com.biolab01.utils.similarity.SorensenSimilarity;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -22,8 +24,12 @@ import java.util.Scanner;
 import java.util.Set;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.Part;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.MultipartPostMethod;
+import org.apache.commons.httpclient.methods.multipart.FilePart;
 
 /**
  *
@@ -228,6 +234,7 @@ public class SubirArchivoBean {
            //this.solution04();
            //this.solution05();
            this.solution06();
+           //this.solution07();
         }
         catch(Exception ex){
             // Mostramos la excepción en la consola
@@ -266,6 +273,111 @@ public class SubirArchivoBean {
         }
     }
     //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="descargarArchivo">
+    public void descargarArchivo() throws IOException {
+        try{
+            FacesContext fc = FacesContext.getCurrentInstance();
+            ExternalContext ec = fc.getExternalContext();
+            
+            String sb = "";
+            
+            for(int i = 0; i < this.rankingData.size(); i++){
+                GenRankingObj obj =  this.rankingData.get(i);
+                String row = "";
+                for(int j = 0; j < obj.getGenNamesArray().size(); j++){
+                    row += obj.getGenNamesArray().get(j);
+                    if(j < obj.getGenNamesArray().size() - 1){
+                        row += ',';
+                    }
+                }
+                sb += row + "\n";
+            }
+            
+            Date now = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+            
+            byte[] data = sb.getBytes();
+            
+            ec.responseReset(); 
+            ec.setResponseHeader("Content-Type", "application/octet-stream");
+            ec.setResponseContentLength(data.length); 
+            ec.setResponseHeader("Content-Disposition", "attachment; filename=\"gen_ranking_" + sdf.format(now) + ".txt\""); // The Save As popup magic is done here. You can give it any file name you want, this only won't work in MSIE, it will use current request URL as file name instead.
+
+            OutputStream output = ec.getResponseOutputStream();
+            output.write(data);
+            
+            fc.responseComplete();
+        }
+        catch(Exception ex){
+             // Mostramos la excepción en la consola
+            System.out.println("Error al intentar descargar el archivo. Detalle: " + ex.getMessage());
+            errorMessage = "Error al intentar descargar el archivo. Detalle: " + ex.getMessage();
+        }
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="consultaWebGO">
+    public void consultaWebGO(int id) throws IOException{
+        try {
+            FacesContext fc = FacesContext.getCurrentInstance();
+            ExternalContext ec = fc.getExternalContext();
+            
+            HttpClient client = new HttpClient();
+            MultipartPostMethod method = new MultipartPostMethod("http://pantherdb.org/webservices/ortholog.jsp?");
+           
+            String genes = "";
+            GenRankingObj ranking = null;
+                    
+            for(int x = 0; x < this.rankingData.size(); x++){
+                GenRankingObj rankingAux = this.rankingData.get(x);
+                if(rankingAux.getId() == id){
+                    ranking = rankingAux;
+                    break;
+                }
+            }
+            
+            for(int i = 0; i < ranking.getGenNamesArray().size(); i++){
+                genes += ranking.getGenNamesArray().get(i);
+                
+                if(i < ranking.getGenNamesArray().size() -1){
+                    genes += ",";
+                }
+            }
+            
+            //Define name-value pairs to set into the QueryString
+            method.addParameter("type", "matchingOrtholog"); 
+            method.addParameter("inputOrganism","MOUSE");
+            method.addParameter("targetOrganism", "HUMAN");
+            method.addParameter("orthologType", "LDO");
+            method.addParameter("idField", genes);
+            
+            // Execute and print response
+            client.executeMethod( method );
+            String response = method.getResponseBodyAsString( );
+            System.out.println( response );
+            method.releaseConnection( );
+            
+            Date now = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+            
+            byte[] data = response.getBytes();
+            
+            ec.responseReset(); 
+            ec.setResponseHeader("Content-Type", "application/octet-stream");
+            ec.setResponseContentLength(data.length); 
+            ec.setResponseHeader("Content-Disposition", "attachment; filename=\"gen_ontology_response_" + sdf.format(now) + ".txt\""); // The Save As popup magic is done here. You can give it any file name you want, this only won't work in MSIE, it will use current request URL as file name instead.
+
+            OutputStream output = ec.getResponseOutputStream();
+            output.write(data);
+            
+            fc.responseComplete();
+        }
+        catch( IOException e ){
+            e.printStackTrace();
+        }
+    }
+//</editor-fold>
     
     //</editor-fold>
     
@@ -872,6 +984,79 @@ public class SubirArchivoBean {
     }
     //</editor-fold>
     
+    //<editor-fold defaultstate="collapsed" desc="solution07">
+    private void solution07() throws Exception{
+        try {
+            RankingProcedure ranking = new RankingProcedure();
+            ArrayList<ClusterObj> totalClusters = ranking.getClusterArrayList(solucionData, this.cantidadGenesCalculo);
+            ArrayList<int[]> clusterKSubSets = new ArrayList<>();
+            ArrayList<GenRankingObj> rankingKSubSets = new ArrayList<GenRankingObj>();
+            ArrayList<GenRankingObj> finalRankingKSubSets = new ArrayList<GenRankingObj>();
+
+            for (int x = 0; x < totalClusters.size(); x++) {
+                System.out.println("Fecha: " + new Date().toString());
+                System.out.println("Cluster " + x + " de " + totalClusters.size());
+                
+                ArrayList<int[]> kSubSetsA = new ArrayList<>();
+                int[] subsetAuxA = ranking.getGenDictionaryIntValues(totalClusters.get(x).getDiccionarioGenes());
+                //boolean[] subsetUsedA = new boolean[subsetAuxA.length];
+                //ranking.getGenDictionarySubsetsRecursive(kSubSetsA, subsetAuxA, this.cantidadGenesCalculo, 0, 0, subsetUsedA, maxGenKubsets);
+                kSubSetsA = ranking.getRandomGenDictionarySubset(totalClusters.get(x).getDiccionarioGenes(), this.cantidadGenesCalculo, maxGenKubsets);
+
+                for (int y = x + 1; y < totalClusters.size(); y++) {
+                    try{
+                        ArrayList<int[]> kSubSetsB = new ArrayList<>();
+                        int[] subsetAuxB = ranking.getGenDictionaryIntValues(totalClusters.get(y).getDiccionarioGenes());
+                        //boolean[] subsetUsedB = new boolean[subsetAuxB.length];
+                        //ranking.getGenDictionarySubsetsRecursive(kSubSetsB, subsetAuxB, this.cantidadGenesCalculo, 0, 0, subsetUsedB, maxGenKubsets);
+                        kSubSetsB = ranking.getRandomGenDictionarySubset(totalClusters.get(y).getDiccionarioGenes(), this.cantidadGenesCalculo, maxGenKubsets);
+                        
+
+                        // Obtenemos la intersección de los arreglos
+                        int[] subsetAuxC = ranking.getGenDictionaryRepeatedIntValues(subsetAuxA, subsetAuxB);
+                        // Verificamos que la intersección al menos contenga un valor
+                        if (subsetAuxC.length > 0) {
+                            // Limpiamos los subsets, y dejamos solamente los subconjuntos con los valores que contengan a la intersección
+                            ArrayList<int[]> kSubSetsAI = ranking.getGenDictionaryInListIntValues(kSubSetsA, subsetAuxC);
+                            ArrayList<int[]> kSubSetsBI = ranking.getGenDictionaryInListIntValues(kSubSetsB, subsetAuxC);
+                            // Obtenemos el ranking final de Subconjuntos
+                            // Iterativo:
+                            ranking.getCommonSubSets(rankingKSubSets, kSubSetsAI, kSubSetsBI);
+                        }
+                    }
+                    catch(Exception inEx){
+                        System.out.printf("Error en clusters: %d,%d",x, y);
+                        System.out.println("Detalle Error: " + inEx.getMessage());
+                    }
+                }
+            }
+
+            int maxAux = 0;
+            
+            this.getRankingFinalSubSets(maxAux, rankingKSubSets, finalRankingKSubSets);
+
+            this.cantidadGenesCalculo = this.genDictionaryArray.size();
+            this.cantidadRankingEncontrados = finalRankingKSubSets.size();
+            this.cantidadGenesPorRanking = maxAux;
+            this.rankingData = finalRankingKSubSets;
+
+            // Obtenemos la cantidad de combinaciones que se pueden hacer con los genes
+            // ArrayList<int[]> kSubSets = ranking.getGenDictionarySubsets(genDictionaryArray, this.cantidadGenesCalculo);
+            System.out.println("Total Clusters: " + totalClusters.size());
+            System.out.println("Cantidad Genes: " + this.genDictionaryArray.size());
+            System.out.println("Ranking Subsets: " + finalRankingKSubSets.size() + ", Cantidad Max: " + maxAux);
+            System.out.println("Total Subconjuntos: " + clusterKSubSets.size());
+
+            // Realizamos el redirect
+            FacesContext.getCurrentInstance().getExternalContext().redirect("ranking.xhtml");
+        }
+        catch(Exception ex){
+            throw ex;
+        }
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="getRankingFinalSubSets">
     private void getRankingFinalSubSets(int maxAux, ArrayList<GenRankingObj> rankingKSubSets, ArrayList<GenRankingObj> finalRankingKSubSets) {
         JaccardSimilarity jSimilarity = new JaccardSimilarity();
         SorensenSimilarity sSimilarity = new SorensenSimilarity();
@@ -936,11 +1121,12 @@ public class SubirArchivoBean {
                 }
                 
                 finalRankingKSubSets.add(grk);
+                
+                index++;
             }
-            
-            index++;
         }
     }
+    //</editor-fold>
     
     //</editor-fold>
 }

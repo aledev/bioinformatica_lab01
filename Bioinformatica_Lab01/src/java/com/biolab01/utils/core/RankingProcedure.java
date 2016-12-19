@@ -11,6 +11,7 @@ import com.biolab01.entities.GenRankingObj;
 import com.biolab01.entities.SolucionObj;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -134,37 +135,45 @@ public class RankingProcedure {
     }
     //</editor-fold>
     
-    //<editor-fold defaultstate="collapsed" desc="comment">
-    public ArrayList<int[]> getRandomGenDictionarySubset(ArrayList<GenDictionary> genLista, int k){
-        int[] superSet = new int[genLista.size()];
+    //<editor-fold defaultstate="collapsed" desc="getRandomGenDictionarySubset">
+    public ArrayList<int[]> getRandomGenDictionarySubset(ArrayList<GenDictionary> genLista, int k, int limit){
+        int nKsubset = (int)Math.pow(genLista.size(), k);
+        if(limit > nKsubset)
+            limit = nKsubset;
         
+        int[] superSet = new int[genLista.size()];
         for(int x = 0; x < genLista.size(); x++){
             superSet[x] = genLista.get(x).getNumeroGen();
         }
         
-        ArrayList<int[]> subsets = new ArrayList<>();
-        int[] s = new int[k]; // here we'll keep indices pointing to elements in input array
-        if (k <= superSet.length) {
-            // first index sequence: 0, 1, 2, ...
-            for (int i = 0; (s[i] = i) < k - 1; i++);  
-            subsets.add(getSubset(superSet, s));
-            for(;;) {
-                int i;
-                // find position of item that can be incremented
-                for (i = k - 1; i >= 0 && s[i] == superSet.length - k + i; i--); 
-                if (i < 0) {
-                    break;
-                } else {
-                    s[i]++;                    // increment this item
-                    for (++i; i < k; i++) {    // fill up remaining items
-                        s[i] = s[i - 1] + 1; 
-                    }
-                    subsets.add(getSubset(superSet, s));
+        ArrayList<ArrayList<Integer>> subsets = new ArrayList<>();
+        ArrayList<int[]> subsetsFinal = new ArrayList<>();
+        
+        for (int x = 0; x < limit; x++) {
+            ArrayList<Integer> s = new ArrayList<>();
+            boolean isUnique = false;
+            while (!isUnique) {
+                for (int i = 0; i < k; i++) {
+                    int j = superSet[this.getRandomIntegerInRange(0, superSet.length)];
+                    if(s.size() < k)
+                        s.add(j);
+                }
+                if (!subsets.contains(s)) {
+                    isUnique = true;
+                    subsets.add(s);
                 }
             }
         }
         
-        return subsets;
+        for(int y = 0; y < subsets.size(); y++){
+            int[] ss = new int[k];
+            for(int z = 0; z < subsets.get(y).size(); z++){
+                ss[z] = (int)subsets.get(y).get(z);
+            }
+            subsetsFinal.add(ss);
+        }
+        
+        return subsetsFinal;
     }
     //</editor-fold>
     

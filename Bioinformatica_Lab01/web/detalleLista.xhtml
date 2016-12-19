@@ -44,6 +44,7 @@
                                         <th>Soluci&oacute;n</th>
                                         <th>Cluster</th>
                                         <th>Gen</th>
+                                        <th>&nbsp;</th>
                                     </tr>                
                                 </thead>
                                 <tbody>
@@ -56,7 +57,10 @@
                                                 #{subirarchivobean.clusterDetalle.nroCluster}
                                             </td>
                                             <td>
-                                                <a onclick="detalleGen('#{item}')" >#{item}</a> 
+                                                #{item}
+                                            </td>
+                                            <td>
+                                                <a class="btn btn-primary" onclick="detalleGen('#{item}')" >Consulta Gen WebGO</a> 
                                             </td>
                                        </tr>
                                     </ui:repeat>                          

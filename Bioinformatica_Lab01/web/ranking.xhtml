@@ -44,7 +44,12 @@
                         </div>
                         <div class="form-group">
                             <div class="col-xs-6 col-md-4">
-                                <input type="button" class="btn btn-primary" value="Volver" onclick="javascript:window.history.back();"></input>
+                                <h:form id="frmProcesar">
+                                    <input type="button" class="btn btn-primary" value="Volver" onclick="javascript:window.history.back();"></input>
+                                    &nbsp;
+                                    <h:commandButton id="btnExportarDatos" action="#{subirarchivobean.descargarArchivo()}" 
+                                                     value="Exportar Datos" class="btn btn-primary"></h:commandButton>
+                                </h:form>
                             </div>
                             <div class="col-xs-6 col-md-4"></div>
                             <div class="col-xs-6 col-md-4"></div>
@@ -63,7 +68,9 @@
                                     <tr>
                                         <th>Genes</th>
                                         <th>Repeticiones</th>
-                                        <th>&nbsp;</th>
+                                        <th>Coef. Jaccard</th>
+                                        <th>Coef. S&oslash;rensen</th>
+                                        <th>Gene Ontology Info</th>
                                     </tr>                
                                 </thead>
                                 <tbody>
@@ -78,7 +85,16 @@
                                                 #{item.cantidad}
                                             </td>
                                             <td>
-                                                <a href="#">Ver Detalle Genes</a>
+                                                #{item.similaridadJaccard}
+                                            </td>
+                                            <td>
+                                                #{item.similaridadSorensen}
+                                            </td>
+                                            <td>
+                                                <h:form id="frmProcesarGen">
+                                                    <h:commandButton id="btnWebGO" action="#{subirarchivobean.consultaWebGO(item.id)}" 
+                                                     value="Consulta GO" class="btn btn-primary"></h:commandButton>
+                                                </h:form>
                                             </td>
                                        </tr>
                                     </ui:repeat>                          
