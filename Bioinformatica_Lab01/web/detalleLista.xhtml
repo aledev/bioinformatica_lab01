@@ -8,6 +8,11 @@
         <h:outputStylesheet name="css/bootstrap.min.css"/>
         <h:outputStylesheet name="css/bootstrap-theme.min.css"/>
         <h:outputStylesheet name="css/template.css"/>
+        <h:outputScript target="head">
+            function detalleGen(gen){
+                window.open('http://www.pantherdb.org/panther/globalSearch.do?fieldValue='+gen,'_blank'); 
+            }
+        </h:outputScript>
     </h:head>
     <h:body>
         <h:outputScript name="js/jquery-3.1.0.min.js"></h:outputScript>
@@ -51,7 +56,7 @@
                                                 #{subirarchivobean.clusterDetalle.nroCluster}
                                             </td>
                                             <td>
-                                                #{item}
+                                                <a onclick="detalleGen('#{item}')" >#{item}</a> 
                                             </td>
                                        </tr>
                                     </ui:repeat>                          
