@@ -347,11 +347,12 @@ public class SubirArchivoBean {
             
             //Define name-value pairs to set into the QueryString
             method.addParameter("type", "matchingOrtholog"); 
-            method.addParameter("inputOrganism","MOUSE");
+            method.addParameter("inputOrganism","HUMAN");
             method.addParameter("targetOrganism", "HUMAN");
             method.addParameter("orthologType", "LDO");
-            method.addParameter("idField", genes);
-            
+            method.addParameter("searchList", genes);
+            //method.addPart(new FilePart("searchList", "", "text/plain","ISO-8859-1" ) );
+             
             // Execute and print response
             client.executeMethod( method );
             String response = method.getResponseBodyAsString( );
